@@ -54,7 +54,9 @@ class ProfileManager: ObservableObject {
             return
         }
 
-        primaryProfile.name = "Main"
+        if primaryProfile.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            primaryProfile.name = "Main"
+        }
         primaryProfile.isSelectedForDisplay = true
         if primaryProfile.iconConfig.showRemainingPercentage == false {
             primaryProfile.iconConfig.showRemainingPercentage = true
@@ -474,6 +476,26 @@ class ProfileManager: ObservableObject {
         }
     }
 
+    /// Updates active profile metadata to reflect the currently selected Codex CLI account.
+    func syncActiveProfileWithCLIAccount(email: String, credentialsJSON: String?) {
+        guard let activeId = activeProfile?.id,
+              let index = profiles.firstIndex(where: { $0.id == activeId }) else {
+            return
+        }
+
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedEmail.isEmpty {
+            profiles[index].name = trimmedEmail
+        }
+
+        profiles[index].cliCredentialsJSON = credentialsJSON
+        profiles[index].hasCliAccount = credentialsJSON != nil
+        profiles[index].cliAccountSyncedAt = credentialsJSON != nil ? Date() : nil
+
+        activeProfile = profiles[index]
+        profileStore.saveProfiles(profiles)
+    }
+
     /// Updates API organization ID for a profile
     func updateAPIOrganizationId(_ orgId: String?, for profileId: UUID) {
         if let index = profiles.firstIndex(where: { $0.id == profileId }) {
@@ -515,6 +537,12 @@ class ProfileManager: ObservableObject {
 
             // Reload the profile to get updated credentials
             profiles = profileStore.loadProfiles()
+            if let profileIndex = profiles.firstIndex(where: { $0.id == profileId }),
+               let email = cliSyncService.extractEmail(from: jsonData) {
+                profiles[profileIndex].name = email
+                activeProfile = profiles[profileIndex]
+                profileStore.saveProfiles(profiles)
+            }
 
             LoggingService.shared.log("ProfileManager: ✅ Successfully synced CLI credentials to default profile on first launch")
 

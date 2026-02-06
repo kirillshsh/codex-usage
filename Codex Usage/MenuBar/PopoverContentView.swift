@@ -59,30 +59,125 @@ struct SmartHeader: View {
     let isRefreshing: Bool
     let onRefresh: () -> Void
 
-    var body: some View {
-        HStack {
-            Spacer()
+    @StateObject private var cliSyncService = CodexCodeSyncService.shared
+    @StateObject private var profileManager = ProfileManager.shared
+    @State private var accountMessage: String?
+    @State private var accountMessageColor: Color = .secondary
 
-            Button(action: onRefresh) {
-                ZStack {
-                    if isRefreshing {
-                        ProgressView()
-                            .controlSize(.small)
-                            .frame(width: 14, height: 14)
+    private var currentAccountEmail: String {
+        if let email = cliSyncService.activeAccountEmail,
+           !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return email
+        }
+
+        if let fallback = profileManager.activeProfile?.name,
+           !fallback.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return fallback
+        }
+
+        return "не авторизован"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Menu {
+                    if cliSyncService.savedAccounts.isEmpty {
+                        Text("сохранённых аккаунтов пока нет")
                     } else {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 11, weight: .medium))
+                        ForEach(cliSyncService.savedAccounts) { account in
+                            Button {
+                                switchToAccount(account)
+                            } label: {
+                                if account.email.caseInsensitiveCompare(currentAccountEmail) == .orderedSame {
+                                    Label(account.email, systemImage: "checkmark")
+                                } else {
+                                    Text(account.email)
+                                }
+                            }
+                        }
                     }
+
+                    Divider()
+
+                    Button("импортировать текущий аккаунт") {
+                        importCurrentAccount()
+                    }
+
+                    Button("добавить через codex login…") {
+                        startCodexLoginFlow()
+                    }
+
+                    Button("обновить список аккаунтов") {
+                        cliSyncService.refreshSavedAccounts()
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.blue)
+
+                        Text(currentAccountEmail)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.secondary.opacity(0.1))
+                    )
                 }
-                .foregroundColor(.secondary)
-                .frame(width: 24, height: 20)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.secondary.opacity(0.1))
-                )
+                .menuStyle(.borderlessButton)
+                .buttonStyle(.plain)
+
+                Button(action: startCodexLoginFlow) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.blue)
+                        .frame(width: 24, height: 20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color.blue.opacity(0.12))
+                        )
+                }
+                .buttonStyle(.plain)
+
+                Button(action: onRefresh) {
+                    ZStack {
+                        if isRefreshing {
+                            ProgressView()
+                                .controlSize(.small)
+                                .frame(width: 14, height: 14)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 11, weight: .medium))
+                        }
+                    }
+                    .foregroundColor(.secondary)
+                    .frame(width: 24, height: 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.secondary.opacity(0.1))
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(isRefreshing)
             }
-            .buttonStyle(.plain)
-            .disabled(isRefreshing)
+
+            if let accountMessage {
+                Text(accountMessage)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(accountMessageColor)
+                    .lineLimit(2)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -90,6 +185,54 @@ struct SmartHeader: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color(nsColor: .controlBackgroundColor).opacity(0.4))
         )
+        .onAppear {
+            cliSyncService.refreshSavedAccounts()
+        }
+    }
+
+    private func switchToAccount(_ account: CodexCLIAccount) {
+        do {
+            let selected = try cliSyncService.switchToAccount(account.id)
+            profileManager.syncActiveProfileWithCLIAccount(
+                email: selected.email,
+                credentialsJSON: selected.authJSON
+            )
+            showAccountMessage("активный аккаунт: \(selected.email)", color: .green)
+            NotificationCenter.default.post(name: .credentialsChanged, object: nil)
+        } catch {
+            showAccountMessage("не удалось переключить аккаунт: \(error.localizedDescription)", color: .red)
+        }
+    }
+
+    private func importCurrentAccount() {
+        do {
+            let imported = try cliSyncService.importCurrentAccount()
+            profileManager.syncActiveProfileWithCLIAccount(
+                email: imported.email,
+                credentialsJSON: imported.authJSON
+            )
+            showAccountMessage("аккаунт добавлен: \(imported.email)", color: .green)
+            NotificationCenter.default.post(name: .credentialsChanged, object: nil)
+        } catch {
+            showAccountMessage("не удалось импортировать аккаунт: \(error.localizedDescription)", color: .red)
+        }
+    }
+
+    private func startCodexLoginFlow() {
+        do {
+            try cliSyncService.launchCodexLoginInTerminal()
+            showAccountMessage(
+                "открыт Terminal. Выполни вход и нажми «импортировать текущий аккаунт».",
+                color: .secondary
+            )
+        } catch {
+            showAccountMessage("не удалось запустить codex login: \(error.localizedDescription)", color: .red)
+        }
+    }
+
+    private func showAccountMessage(_ message: String, color: Color) {
+        accountMessage = message
+        accountMessageColor = color
     }
 }
 

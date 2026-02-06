@@ -7,119 +7,249 @@
 
 import Foundation
 import Security
+import Combine
 
-/// Manages synchronization of Codex Code CLI credentials between system Keychain and profiles
-class CodexCodeSyncService {
+struct CodexCLIAccount: Codable, Identifiable, Equatable {
+    let id: UUID
+    var email: String
+    var accountId: String?
+    var authJSON: String
+    var addedAt: Date
+    var lastUsedAt: Date
+
+    init(
+        id: UUID = UUID(),
+        email: String,
+        accountId: String? = nil,
+        authJSON: String,
+        addedAt: Date = Date(),
+        lastUsedAt: Date = Date()
+    ) {
+        self.id = id
+        self.email = email
+        self.accountId = accountId
+        self.authJSON = authJSON
+        self.addedAt = addedAt
+        self.lastUsedAt = lastUsedAt
+    }
+}
+
+private struct CodexCLIAccountStore: Codable {
+    var accounts: [CodexCLIAccount]
+}
+
+/// Manages synchronization of Codex CLI credentials between ~/.codex/auth.json and app profiles.
+class CodexCodeSyncService: ObservableObject {
     static let shared = CodexCodeSyncService()
 
-    private init() {}
+    @Published private(set) var savedAccounts: [CodexCLIAccount] = []
+    @Published private(set) var activeAccountEmail: String?
 
-    // MARK: - System Keychain Access
+    private var codexAuthFileURL: URL {
+        Constants.CodexPaths.codexDirectory.appendingPathComponent("auth.json")
+    }
 
-    /// Reads Codex Code credentials from system Keychain using security command
+    private var savedAccountsURL: URL {
+        Constants.CodexPaths.codexDirectory
+            .appendingPathComponent("usage_tracker")
+            .appendingPathComponent("codex_cli_accounts.json")
+    }
+
+    private init() {
+        refreshSavedAccounts()
+    }
+
+    // MARK: - Codex Auth File Access
+
+    /// Reads Codex CLI credentials from ~/.codex/auth.json.
     func readSystemCredentials() throws -> String? {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/security")
-        process.arguments = [
-            "find-generic-password",
-            "-s", "Codex Code-credentials",
-            "-a", NSUserName(),
-            "-w"  // Print password only
-        ]
+        guard FileManager.default.fileExists(atPath: codexAuthFileURL.path) else {
+            return nil
+        }
 
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let exitCode = process.terminationStatus
-
-        if exitCode == 0 {
-            let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            guard let value = String(data: outputData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+        do {
+            let data = try Data(contentsOf: codexAuthFileURL)
+            guard let jsonString = String(data: data, encoding: .utf8) else {
                 throw CodexCodeError.invalidJSON
             }
-            return value
-        } else if exitCode == 44 {
-            // Exit code 44 = item not found
-            return nil
-        } else {
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorString = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-            LoggingService.shared.log("Failed to read keychain: \(errorString)")
-            throw CodexCodeError.keychainReadFailed(status: OSStatus(exitCode))
+            _ = try parseJSONObject(from: jsonString)
+            return jsonString
+        } catch {
+            LoggingService.shared.log("Failed to read Codex auth file: \(error.localizedDescription)")
+            throw CodexCodeError.keychainReadFailed(status: OSStatus(-1))
         }
     }
 
-    /// Writes Codex Code credentials to system Keychain using security command
+    /// Writes Codex CLI credentials to ~/.codex/auth.json.
     func writeSystemCredentials(_ jsonData: String) throws {
-        LoggingService.shared.log("Writing credentials to keychain using security command")
+        _ = try parseJSONObject(from: jsonData)
 
-        // First, delete existing item
-        let deleteProcess = Process()
-        deleteProcess.executableURL = URL(fileURLWithPath: "/usr/bin/security")
-        deleteProcess.arguments = [
-            "delete-generic-password",
-            "-s", "Codex Code-credentials",
-            "-a", NSUserName()
-        ]
+        do {
+            try FileManager.default.createDirectory(
+                at: codexAuthFileURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
 
-        try deleteProcess.run()
-        deleteProcess.waitUntilExit()
+            try jsonData.write(to: codexAuthFileURL, atomically: true, encoding: .utf8)
+            try FileManager.default.setAttributes(
+                [.posixPermissions: 0o600],
+                ofItemAtPath: codexAuthFileURL.path
+            )
 
-        let deleteExitCode = deleteProcess.terminationStatus
-        if deleteExitCode == 0 {
-            LoggingService.shared.log("Deleted existing keychain item")
-        } else {
-            LoggingService.shared.log("No existing keychain item to delete (or delete failed with code \(deleteExitCode))")
+            LoggingService.shared.log("✅ Updated ~/.codex/auth.json")
+        } catch {
+            LoggingService.shared.log("❌ Failed to write Codex auth file: \(error.localizedDescription)")
+            throw CodexCodeError.keychainWriteFailed(status: OSStatus(-1))
+        }
+    }
+
+    // MARK: - Saved Accounts Store
+
+    func refreshSavedAccounts() {
+        do {
+            var accounts = try loadSavedAccountsFromDisk()
+
+            if let currentAuthJSON = try readSystemCredentials() {
+                let email = extractEmail(from: currentAuthJSON) ?? "unknown@codex.local"
+                let accountId = extractAccountId(from: currentAuthJSON)
+                let now = Date()
+
+                if let index = findAccountIndex(in: accounts, email: email, accountId: accountId) {
+                    accounts[index].authJSON = currentAuthJSON
+                    accounts[index].lastUsedAt = now
+                    if accounts[index].accountId == nil {
+                        accounts[index].accountId = accountId
+                    }
+                } else {
+                    accounts.append(
+                        CodexCLIAccount(
+                            email: email,
+                            accountId: accountId,
+                            authJSON: currentAuthJSON,
+                            addedAt: now,
+                            lastUsedAt: now
+                        )
+                    )
+                }
+
+                activeAccountEmail = email
+            } else {
+                activeAccountEmail = nil
+            }
+
+            try saveSavedAccountsToDisk(accounts)
+            savedAccounts = accounts.sorted(by: { $0.lastUsedAt > $1.lastUsedAt })
+        } catch {
+            LoggingService.shared.logError("Failed to refresh saved Codex CLI accounts", error: error)
+            savedAccounts = []
+            activeAccountEmail = nil
+        }
+    }
+
+    @discardableResult
+    func importCurrentAccount() throws -> CodexCLIAccount {
+        guard let currentAuthJSON = try readSystemCredentials() else {
+            throw CodexCodeError.noCredentialsFound
         }
 
-        // Add new item using security command
-        let addProcess = Process()
-        addProcess.executableURL = URL(fileURLWithPath: "/usr/bin/security")
-        addProcess.arguments = [
-            "add-generic-password",
-            "-s", "Codex Code-credentials",
-            "-a", NSUserName(),
-            "-w", jsonData,
-            "-U"  // Update if exists
-        ]
+        let email = extractEmail(from: currentAuthJSON) ?? "unknown@codex.local"
+        let accountId = extractAccountId(from: currentAuthJSON)
+        let now = Date()
 
-        let outputPipe = Pipe()
+        var accounts = try loadSavedAccountsFromDisk()
+
+        let account: CodexCLIAccount
+        if let index = findAccountIndex(in: accounts, email: email, accountId: accountId) {
+            accounts[index].authJSON = currentAuthJSON
+            accounts[index].lastUsedAt = now
+            if accounts[index].accountId == nil {
+                accounts[index].accountId = accountId
+            }
+            account = accounts[index]
+        } else {
+            let created = CodexCLIAccount(
+                email: email,
+                accountId: accountId,
+                authJSON: currentAuthJSON,
+                addedAt: now,
+                lastUsedAt: now
+            )
+            accounts.append(created)
+            account = created
+        }
+
+        try saveSavedAccountsToDisk(accounts)
+        savedAccounts = accounts.sorted(by: { $0.lastUsedAt > $1.lastUsedAt })
+        activeAccountEmail = email
+
+        LoggingService.shared.log("Imported current Codex CLI account: \(email)")
+        return account
+    }
+
+    @discardableResult
+    func switchToAccount(_ accountId: UUID) throws -> CodexCLIAccount {
+        var accounts = try loadSavedAccountsFromDisk()
+
+        guard let index = accounts.firstIndex(where: { $0.id == accountId }) else {
+            throw CodexCodeError.accountNotFound
+        }
+
+        var selected = accounts[index]
+        try writeSystemCredentials(selected.authJSON)
+
+        selected.lastUsedAt = Date()
+        accounts[index] = selected
+
+        try saveSavedAccountsToDisk(accounts)
+        savedAccounts = accounts.sorted(by: { $0.lastUsedAt > $1.lastUsedAt })
+        activeAccountEmail = selected.email
+
+        LoggingService.shared.log("Switched Codex CLI account to: \(selected.email)")
+        return selected
+    }
+
+    func launchCodexLoginInTerminal() throws {
+        let script = """
+        tell application "Terminal"
+            activate
+            do script "codex login"
+        end tell
+        """
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = ["-"]
+
+        let inputPipe = Pipe()
         let errorPipe = Pipe()
-        addProcess.standardOutput = outputPipe
-        addProcess.standardError = errorPipe
+        process.standardInput = inputPipe
+        process.standardError = errorPipe
 
-        try addProcess.run()
-        addProcess.waitUntilExit()
+        try process.run()
 
-        let exitCode = addProcess.terminationStatus
-
-        if exitCode == 0 {
-            LoggingService.shared.log("✅ Added Codex Code system credentials successfully using security command")
-        } else {
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorString = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-            LoggingService.shared.log("❌ Failed to add credentials: \(errorString)")
-            throw CodexCodeError.keychainWriteFailed(status: OSStatus(exitCode))
+        if let scriptData = script.data(using: .utf8) {
+            inputPipe.fileHandleForWriting.write(scriptData)
         }
+        inputPipe.fileHandleForWriting.closeFile()
+
+        process.waitUntilExit()
+
+        guard process.terminationStatus == 0 else {
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            let errorText = String(data: errorData, encoding: .utf8) ?? "Unknown osascript error"
+            LoggingService.shared.log("Failed to launch Terminal login flow: \(errorText)")
+            throw CodexCodeError.keychainWriteFailed(status: process.terminationStatus)
+        }
+
+        LoggingService.shared.log("Launched codex login in Terminal")
     }
 
     // MARK: - Profile Sync Operations
 
-    /// Syncs credentials from system to profile (one-time copy)
+    /// Syncs credentials from system to profile (one-time copy).
     func syncToProfile(_ profileId: UUID) throws {
         guard let jsonData = try readSystemCredentials() else {
             throw CodexCodeError.noCredentialsFound
-        }
-
-        // Validate JSON format
-        guard let data = jsonData.data(using: .utf8),
-              let _ = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw CodexCodeError.invalidJSON
         }
 
         // Save to profile directly
@@ -129,12 +259,19 @@ class CodexCodeSyncService {
         }
 
         profiles[index].cliCredentialsJSON = jsonData
+        profiles[index].hasCliAccount = true
+        profiles[index].cliAccountSyncedAt = Date()
+
+        if let email = extractEmail(from: jsonData) {
+            profiles[index].name = email
+        }
+
         ProfileStore.shared.saveProfiles(profiles)
 
         LoggingService.shared.log("Synced CLI credentials to profile: \(profileId)")
     }
 
-    /// Applies profile's CLI credentials to system (overwrites current login)
+    /// Applies profile's CLI credentials to system (overwrites current login).
     func applyProfileCredentials(_ profileId: UUID) throws {
         LoggingService.shared.log("🔄 Applying CLI credentials for profile: \(profileId)")
 
@@ -145,13 +282,13 @@ class CodexCodeSyncService {
             throw CodexCodeError.noProfileCredentials
         }
 
-        LoggingService.shared.log("📦 Found CLI credentials, writing to keychain...")
         try writeSystemCredentials(jsonData)
+        _ = try? importCurrentAccount()
 
         LoggingService.shared.log("✅ Applied profile CLI credentials to system: \(profileId)")
     }
 
-    /// Removes CLI credentials from profile (doesn't affect system)
+    /// Removes CLI credentials from profile (doesn't affect system).
     func removeFromProfile(_ profileId: UUID) throws {
         var profiles = ProfileStore.shared.loadProfiles()
         guard let index = profiles.firstIndex(where: { $0.id == profileId }) else {
@@ -159,6 +296,8 @@ class CodexCodeSyncService {
         }
 
         profiles[index].cliCredentialsJSON = nil
+        profiles[index].hasCliAccount = false
+        profiles[index].cliAccountSyncedAt = nil
         ProfileStore.shared.saveProfiles(profiles)
 
         LoggingService.shared.log("Removed CLI credentials from profile: \(profileId)")
@@ -167,40 +306,78 @@ class CodexCodeSyncService {
     // MARK: - Access Token Extraction
 
     func extractAccessToken(from jsonData: String) -> String? {
-        guard let data = jsonData.data(using: .utf8),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let oauth = json["codexAiOauth"] as? [String: Any],
-              let token = oauth["accessToken"] as? String else {
+        guard let json = try? parseJSONObject(from: jsonData) else {
             return nil
         }
-        return token
+
+        if let tokens = json["tokens"] as? [String: Any],
+           let token = tokens["access_token"] as? String {
+            return token
+        }
+
+        if let oauth = json["codexAiOauth"] as? [String: Any],
+           let token = oauth["accessToken"] as? String {
+            return token
+        }
+
+        return nil
     }
 
     func extractSubscriptionInfo(from jsonData: String) -> (type: String, scopes: [String])? {
-        guard let data = jsonData.data(using: .utf8),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let oauth = json["codexAiOauth"] as? [String: Any] else {
+        guard let json = try? parseJSONObject(from: jsonData) else {
             return nil
         }
 
-        let subType = oauth["subscriptionType"] as? String ?? "unknown"
-        let scopes = oauth["scopes"] as? [String] ?? []
+        // Legacy format
+        if let oauth = json["codexAiOauth"] as? [String: Any] {
+            let subType = oauth["subscriptionType"] as? String ?? "unknown"
+            let scopes = oauth["scopes"] as? [String] ?? []
+            return (subType, scopes)
+        }
 
-        return (subType, scopes)
+        // Current Codex auth.json JWT claims
+        guard let accessToken = extractAccessToken(from: jsonData),
+              let claims = decodeJWTClaims(from: accessToken) else {
+            return nil
+        }
+
+        let scopes = claims["scp"] as? [String] ?? []
+
+        if let authData = claims["https://api.openai.com/auth"] as? [String: Any],
+           let planType = authData["chatgpt_plan_type"] as? String {
+            return (planType, scopes)
+        }
+
+        return ("unknown", scopes)
     }
 
-    /// Extracts the token expiry date from CLI credentials JSON
+    /// Extracts the token expiry date from CLI credentials JSON.
     func extractTokenExpiry(from jsonData: String) -> Date? {
-        guard let data = jsonData.data(using: .utf8),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let oauth = json["codexAiOauth"] as? [String: Any],
-              let expiresAt = oauth["expiresAt"] as? TimeInterval else {
+        // Legacy format
+        if let json = try? parseJSONObject(from: jsonData),
+           let oauth = json["codexAiOauth"] as? [String: Any],
+           let expiresAt = oauth["expiresAt"] as? TimeInterval {
+            return Date(timeIntervalSince1970: expiresAt)
+        }
+
+        // Current JWT format
+        guard let accessToken = extractAccessToken(from: jsonData),
+              let claims = decodeJWTClaims(from: accessToken) else {
             return nil
         }
-        return Date(timeIntervalSince1970: expiresAt)
+
+        if let expDouble = claims["exp"] as? TimeInterval {
+            return Date(timeIntervalSince1970: expDouble)
+        }
+
+        if let expInt = claims["exp"] as? Int {
+            return Date(timeIntervalSince1970: TimeInterval(expInt))
+        }
+
+        return nil
     }
 
-    /// Checks if the OAuth token in the credentials JSON is expired
+    /// Checks if the OAuth token in the credentials JSON is expired.
     func isTokenExpired(_ jsonData: String) -> Bool {
         guard let expiryDate = extractTokenExpiry(from: jsonData) else {
             // No expiry info = assume valid
@@ -209,10 +386,54 @@ class CodexCodeSyncService {
         return Date() > expiryDate
     }
 
+    /// Attempts to extract account email from credentials JSON.
+    func extractEmail(from jsonData: String) -> String? {
+        guard let json = try? parseJSONObject(from: jsonData) else {
+            return nil
+        }
+
+        if let email = json["email"] as? String,
+           !email.isEmpty {
+            return email
+        }
+
+        if let tokens = json["tokens"] as? [String: Any],
+           let idToken = tokens["id_token"] as? String,
+           let claims = decodeJWTClaims(from: idToken),
+           let email = claims["email"] as? String,
+           !email.isEmpty {
+            return email
+        }
+
+        if let accessToken = extractAccessToken(from: jsonData),
+           let claims = decodeJWTClaims(from: accessToken),
+           let profile = claims["https://api.openai.com/profile"] as? [String: Any],
+           let email = profile["email"] as? String,
+           !email.isEmpty {
+            return email
+        }
+
+        return nil
+    }
+
+    func extractAccountId(from jsonData: String) -> String? {
+        guard let json = try? parseJSONObject(from: jsonData) else {
+            return nil
+        }
+
+        if let tokens = json["tokens"] as? [String: Any],
+           let accountId = tokens["account_id"] as? String,
+           !accountId.isEmpty {
+            return accountId
+        }
+
+        return nil
+    }
+
     // MARK: - Auto Re-sync Before Switching
 
-    /// Re-syncs credentials from system Keychain before profile switching
-    /// This ensures we always have the latest CLI login when switching profiles
+    /// Re-syncs credentials from current Codex auth file before profile switching.
+    /// This ensures we always have the latest CLI login when switching profiles.
     func resyncBeforeSwitching(for profileId: UUID) throws {
         LoggingService.shared.log("Re-syncing CLI credentials before profile switch: \(profileId)")
 
@@ -230,10 +451,92 @@ class CodexCodeSyncService {
         }
 
         profiles[index].cliCredentialsJSON = freshJSON
+        profiles[index].hasCliAccount = true
         profiles[index].cliAccountSyncedAt = Date()  // Update sync timestamp
+
+        if let email = extractEmail(from: freshJSON) {
+            profiles[index].name = email
+        }
+
         ProfileStore.shared.saveProfiles(profiles)
 
-        LoggingService.shared.log("✓ Re-synced CLI credentials from system and updated timestamp")
+        _ = try? importCurrentAccount()
+
+        LoggingService.shared.log("✓ Re-synced CLI credentials from auth file and updated timestamp")
+    }
+
+    // MARK: - Private Helpers
+
+    private func parseJSONObject(from jsonData: String) throws -> [String: Any] {
+        guard let data = jsonData.data(using: .utf8),
+              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw CodexCodeError.invalidJSON
+        }
+        return json
+    }
+
+    private func loadSavedAccountsFromDisk() throws -> [CodexCLIAccount] {
+        guard FileManager.default.fileExists(atPath: savedAccountsURL.path) else {
+            return []
+        }
+
+        let data = try Data(contentsOf: savedAccountsURL)
+        let decoded = try JSONDecoder().decode(CodexCLIAccountStore.self, from: data)
+        return decoded.accounts
+    }
+
+    private func saveSavedAccountsToDisk(_ accounts: [CodexCLIAccount]) throws {
+        try FileManager.default.createDirectory(
+            at: savedAccountsURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+
+        let payload = CodexCLIAccountStore(accounts: accounts)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(payload)
+        try data.write(to: savedAccountsURL, options: [.atomic])
+        try FileManager.default.setAttributes(
+            [.posixPermissions: 0o600],
+            ofItemAtPath: savedAccountsURL.path
+        )
+    }
+
+    private func findAccountIndex(
+        in accounts: [CodexCLIAccount],
+        email: String,
+        accountId: String?
+    ) -> Int? {
+        if let accountId,
+           let idx = accounts.firstIndex(where: { $0.accountId == accountId }) {
+            return idx
+        }
+
+        return accounts.firstIndex {
+            $0.email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ==
+            email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        }
+    }
+
+    private func decodeJWTClaims(from token: String) -> [String: Any]? {
+        let parts = token.split(separator: ".")
+        guard parts.count >= 2 else { return nil }
+
+        var payload = String(parts[1])
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+
+        let remainder = payload.count % 4
+        if remainder != 0 {
+            payload += String(repeating: "=", count: 4 - remainder)
+        }
+
+        guard let data = Data(base64Encoded: payload),
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+
+        return object
     }
 }
 
@@ -245,19 +548,22 @@ enum CodexCodeError: LocalizedError {
     case keychainReadFailed(status: OSStatus)
     case keychainWriteFailed(status: OSStatus)
     case noProfileCredentials
+    case accountNotFound
 
     var errorDescription: String? {
         switch self {
         case .noCredentialsFound:
-            return "No Codex Code credentials found in system Keychain. Please log in to Codex Code first."
+            return "No Codex CLI credentials found in ~/.codex/auth.json. Please run codex login first."
         case .invalidJSON:
-            return "Codex Code credentials are corrupted or invalid."
+            return "Codex CLI credentials are corrupted or invalid JSON."
         case .keychainReadFailed(let status):
-            return "Failed to read credentials from system Keychain (status: \(status))."
+            return "Failed to read credentials from Codex auth storage (status: \(status))."
         case .keychainWriteFailed(let status):
-            return "Failed to write credentials to system Keychain (status: \(status))."
+            return "Failed to write credentials to Codex auth storage (status: \(status))."
         case .noProfileCredentials:
             return "This profile has no synced CLI account."
+        case .accountNotFound:
+            return "Selected account was not found in saved Codex CLI accounts."
         }
     }
 }
