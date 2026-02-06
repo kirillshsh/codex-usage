@@ -373,12 +373,20 @@ class ClaudeAPIService: APIServiceProtocol {
     ///   - organizationId: The organization ID
     /// - Returns: ClaudeUsage data for the profile
     func fetchUsageData(sessionKey: String, organizationId: String) async throws -> ClaudeUsage {
+        if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
+            return snapshotUsage
+        }
+
         let usageData = try await performRequest(endpoint: "/organizations/\(organizationId)/usage", sessionKey: sessionKey)
         return try parseUsageResponse(usageData)
     }
 
     /// Fetches real usage data from Claude's API
     func fetchUsageData() async throws -> ClaudeUsage {
+        if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
+            return snapshotUsage
+        }
+
         let auth = try getAuthentication()
 
         switch auth {

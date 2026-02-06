@@ -771,6 +771,10 @@ class MenuBarManager: NSObject, ObservableObject {
 
     /// Fetches usage data for a specific profile using its credentials
     private func fetchUsageForProfile(_ profile: Profile) async throws -> ClaudeUsage {
+        if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
+            return snapshotUsage
+        }
+
         guard let sessionKey = profile.claudeSessionKey,
               let orgId = profile.organizationId else {
             throw AppError(

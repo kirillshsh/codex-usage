@@ -1,5 +1,20 @@
 # Claude Usage Tracker
 
+> Fork note (Codex CLI adaptation): this fork adds a local Codex CLI usage backend and menu bar integration via `~/.codex/usage_tracker/latest_snapshot.json`.
+>
+> Quick setup on macOS:
+> ```bash
+> ./scripts/install_codex_usage_tracker.sh
+> ```
+>
+> What this script does:
+> - installs `codex_usage_tracker/codex_usage_tracker.py` to `~/.codex/usage_tracker/`
+> - enables snapshot auto-refresh via `launchd` (`com.codex.usage-tracker`)
+> - builds the menu bar app and installs it to `~/Applications/Codex Usage.app`
+> - enables menu bar app auto-start via `launchd` (`com.codex.usage-menubar`)
+>
+> Tracker docs: [`codex_usage_tracker/README.md`](codex_usage_tracker/README.md)
+>
 <div align="center">
   <img src=".github/cover.jpg" alt="Claude Usage Tracker" width="100%">
 

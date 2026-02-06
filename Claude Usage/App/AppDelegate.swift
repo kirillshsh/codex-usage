@@ -75,6 +75,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
 
     private func shouldShowSetupWizard() -> Bool {
+        // Codex snapshot mode: if local Codex usage data already exists, skip wizard.
+        if CodexUsageSnapshotService.shared.hasSnapshot {
+            LoggingService.shared.log("AppDelegate: Codex snapshot detected, skipping setup wizard")
+            return false
+        }
+
         // FORCE SHOW wizard on very first app launch (one-time)
         // This ensures users see the migration option if they have old data
         if !SharedDataStore.shared.hasShownWizardOnce() {

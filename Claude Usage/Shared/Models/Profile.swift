@@ -97,9 +97,17 @@ struct Profile: Codable, Identifiable, Equatable {
         apiSessionKey != nil && apiOrganizationId != nil
     }
 
+    /// True if local Codex usage snapshot exists.
+    var hasCodexSnapshot: Bool {
+        let snapshotPath = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".codex/usage_tracker/latest_snapshot.json")
+            .path
+        return FileManager.default.fileExists(atPath: snapshotPath)
+    }
+
     /// True if profile has credentials that can fetch usage data (Claude.ai, CLI OAuth, or API Console)
     var hasUsageCredentials: Bool {
-        hasClaudeAI || hasAPIConsole || hasValidCLIOAuth || hasValidSystemCLIOAuth
+        hasClaudeAI || hasAPIConsole || hasValidCLIOAuth || hasValidSystemCLIOAuth || hasCodexSnapshot
     }
 
     /// True if profile has CLI OAuth credentials that are not expired
@@ -120,7 +128,7 @@ struct Profile: Codable, Identifiable, Equatable {
     }
 
     var hasAnyCredentials: Bool {
-        hasClaudeAI || hasAPIConsole || cliCredentialsJSON != nil
+        hasClaudeAI || hasAPIConsole || cliCredentialsJSON != nil || hasCodexSnapshot
     }
 }
 
