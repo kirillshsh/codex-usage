@@ -1008,7 +1008,7 @@ final class MenuBarIconRenderer {
         case .safe:
             return NSColor.systemGreen
         case .moderate:
-            return NSColor.systemOrange
+            return NSColor.systemBlue
         case .critical:
             return NSColor.systemRed
         }

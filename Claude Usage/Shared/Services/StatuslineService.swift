@@ -145,8 +145,8 @@ LEVEL_3=$'\\033[38;5;34m'   # medium green
 LEVEL_4=$'\\033[38;5;100m'  # green-yellowish dark
 LEVEL_5=$'\\033[38;5;142m'  # olive/yellow-green dark
 LEVEL_6=$'\\033[38;5;178m'  # muted yellow
-LEVEL_7=$'\\033[38;5;172m'  # muted yellow-orange
-LEVEL_8=$'\\033[38;5;166m'  # darker orange
+LEVEL_7=$'\\033[38;5;75m'   # muted blue
+LEVEL_8=$'\\033[38;5;33m'   # deeper blue
 LEVEL_9=$'\\033[38;5;160m'  # dark red
 LEVEL_10=$'\\033[38;5;124m' # deep red
 

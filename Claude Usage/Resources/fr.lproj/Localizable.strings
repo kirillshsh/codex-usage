@@ -389,7 +389,7 @@
 "appearance.global_settings" = "Paramètres Globaux";
 "appearance.menu_bar_metrics" = "Métriques de la Barre de Menus";
 "appearance.monochrome_title" = "Monochrome";
-"appearance.monochrome_description" = "Utiliser une couleur adaptative au lieu des couleurs d'état (vert/orange/rouge)";
+"appearance.monochrome_description" = "Utiliser une couleur adaptative au lieu des couleurs d'état (vert/bleu/rouge)";
 "appearance.show_labels_title" = "Afficher les Étiquettes d'Icônes";
 "appearance.show_labels_description" = "Afficher les étiquettes de préfixe (S:, W:, API:) pour chaque métrique";
 "appearance.show_remaining_title" = "Afficher le Pourcentage Restant";

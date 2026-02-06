@@ -405,7 +405,7 @@
 "appearance.global_settings" = "Globale Einstellungen";
 "appearance.menu_bar_metrics" = "Menüleisten-Metriken";
 "appearance.monochrome_title" = "Monochrom";
-"appearance.monochrome_description" = "Adaptive Farbe anstelle von Statusfarben verwenden (grün/orange/rot)";
+"appearance.monochrome_description" = "Adaptive Farbe anstelle von Statusfarben verwenden (grün/blau/rot)";
 "appearance.show_labels_title" = "Symbol-Labels Anzeigen";
 "appearance.show_labels_description" = "Präfix-Labels (S:, W:, API:) für jede Metrik anzeigen";
 "appearance.show_remaining_title" = "Verbleibender Prozentsatz anzeigen";

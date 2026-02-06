@@ -18,8 +18,8 @@ enum SettingsColors {
     /// Error state (red)
     static let error = Color.red
 
-    /// Warning state (orange)
-    static let warning = Color.orange
+    /// Warning state (blue)
+    static let warning = Color.blue
 
     /// Informational state (blue)
     static let info = Color.blue
@@ -50,7 +50,7 @@ enum SettingsColors {
     static let featureIcon = Color.blue
 
     /// Beta badge color
-    static let betaBadge = Color.orange
+    static let betaBadge = Color.blue
 
     /// Pro feature badge
     static let proBadge = Color.purple
@@ -64,7 +64,7 @@ enum SettingsColors {
     static let usageMedium = Color.yellow
 
     /// High usage (75-90%)
-    static let usageHigh = Color.orange
+    static let usageHigh = Color.blue
 
     /// Critical usage (90%+)
     static let usageCritical = Color.red

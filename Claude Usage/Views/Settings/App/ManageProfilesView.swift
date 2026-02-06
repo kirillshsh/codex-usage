@@ -98,7 +98,7 @@ struct ManageProfilesView: View {
                                     HStack(alignment: .top, spacing: 6) {
                                         Image(systemName: "exclamationmark.triangle.fill")
                                             .font(.system(size: 10))
-                                            .foregroundColor(.orange)
+                                            .foregroundColor(.blue)
                                         Text("multiprofile.at_least_one".localized)
                                             .font(.system(size: 10))
                                             .foregroundColor(.secondary)

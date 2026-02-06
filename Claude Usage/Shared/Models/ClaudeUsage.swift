@@ -41,7 +41,7 @@ struct ClaudeUsage: Codable, Equatable {
     /// DEPRECATED: Use UsageStatusCalculator.calculateStatus() instead for display-aware logic
     /// This property remains for backwards compatibility only
     /// - > 20% remaining: safe (green)
-    /// - 10-20% remaining: moderate (orange)
+    /// - 10-20% remaining: moderate (blue)
     /// - < 10% remaining: critical (red)
     @available(*, deprecated, message: "Use UsageStatusCalculator.calculateStatus() with showRemaining parameter")
     var statusLevel: UsageStatusLevel {

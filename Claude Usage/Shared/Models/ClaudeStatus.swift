@@ -19,7 +19,7 @@ struct ClaudeStatus: Codable, Equatable {
             case .minor:
                 return .yellow
             case .major:
-                return .orange
+                return .blue
             case .critical:
                 return .red
             case .unknown:
@@ -29,7 +29,7 @@ struct ClaudeStatus: Codable, Equatable {
     }
 
     enum StatusColor {
-        case green, yellow, orange, red, gray
+        case green, yellow, blue, red, gray
     }
 
     /// Default unknown status

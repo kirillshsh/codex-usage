@@ -362,7 +362,7 @@ struct SmartHeader: View {
         switch status.indicator.color {
         case .green: return .green
         case .yellow: return .yellow
-        case .orange: return .orange
+        case .blue: return .blue
         case .red: return .red
         case .gray: return .gray
         }
@@ -597,7 +597,7 @@ struct SmartUsageCard: View {
     private var statusColor: Color {
         switch statusLevel {
         case .safe: return .green
-        case .moderate: return .orange
+        case .moderate: return .blue
         case .critical: return .red
         }
     }
@@ -691,7 +691,7 @@ struct ContextualInsights: View {
         if usage.sessionPercentage > 80 {
             result.append(Insight(
                 icon: "exclamationmark.triangle.fill",
-                color: .orange,
+                color: .blue,
                 title: "usage.high_session".localized,
                 description: "usage.high_session.desc".localized
             ))
@@ -805,7 +805,7 @@ struct ClaudeStatusRow: View {
         switch status.indicator.color {
         case .green: return .green
         case .yellow: return .yellow
-        case .orange: return .orange
+        case .blue: return .blue
         case .red: return .red
         case .gray: return .gray
         }
@@ -919,7 +919,7 @@ struct APIUsageCard: View {
     private var usageColor: Color {
         switch statusLevel {
         case .safe: return .green
-        case .moderate: return .orange
+        case .moderate: return .blue
         case .critical: return .red
         }
     }

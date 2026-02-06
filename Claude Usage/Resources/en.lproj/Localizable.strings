@@ -419,7 +419,7 @@
 "appearance.global_settings" = "Global Settings";
 "appearance.menu_bar_metrics" = "Menu Bar Metrics";
 "appearance.monochrome_title" = "Monochrome";
-"appearance.monochrome_description" = "Use adaptive color instead of status colors (green/orange/red)";
+"appearance.monochrome_description" = "Use adaptive color instead of status colors (green/blue/red)";
 "appearance.show_labels_title" = "Show Icon Labels";
 "appearance.show_labels_description" = "Display prefix labels (S:, W:, API:) for each metric";
 "appearance.show_remaining_title" = "Show Remaining Percentage";
@@ -484,7 +484,7 @@
 "multiprofile.enable_title" = "Show Multiple Profiles";
 "multiprofile.enable_description" = "Display selected profiles as compact icons side-by-side";
 "multiprofile.select_profiles" = "Select profiles to show:";
-"multiprofile.info" = "Each profile shows usage with color indicating status (green/orange/red)";
+"multiprofile.info" = "Each profile shows usage with color indicating status (green/blue/red)";
 "multiprofile.active_badge" = "Active";
 "multiprofile.at_least_one" = "At least one profile must be selected";
 "multiprofile.icon_style" = "Icon Style";
@@ -493,7 +493,7 @@
 "multiprofile.show_label" = "Show Profile Label";
 "multiprofile.show_label_description" = "Display profile name below the icon";
 "multiprofile.use_system_color" = "Monochrome";
-"multiprofile.use_system_color_description" = "Use white color instead of status colors (green/orange/red)";
+"multiprofile.use_system_color_description" = "Use white color instead of status colors (green/blue/red)";
 
 /* ==================== */
 /* MARK: - General Settings (Profile-Level) */

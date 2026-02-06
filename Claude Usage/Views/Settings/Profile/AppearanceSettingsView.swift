@@ -209,7 +209,7 @@ struct MultiProfileModeWarningCard: View {
             HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 16))
-                    .foregroundColor(.orange)
+                    .foregroundColor(.blue)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("appearance.multiprofile_locked_title".localized)
@@ -232,12 +232,12 @@ struct MultiProfileModeWarningCard: View {
                     Text("appearance.disable_multiprofile".localized)
                         .font(.system(size: 11, weight: .medium))
                 }
-                .foregroundColor(.orange)
+                .foregroundColor(.blue)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.orange, lineWidth: 1)
+                        .stroke(Color.blue, lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)
@@ -245,11 +245,11 @@ struct MultiProfileModeWarningCard: View {
         .padding(DesignTokens.Spacing.cardPadding)
         .background(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .fill(Color.orange.opacity(0.1))
+                .fill(Color.blue.opacity(0.1))
         )
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+                .stroke(Color.blue.opacity(0.3), lineWidth: 1)
         )
     }
 }

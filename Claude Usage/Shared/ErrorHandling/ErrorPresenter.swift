@@ -197,7 +197,7 @@ struct ErrorDetailsView: View {
 
     private var iconColor: Color {
         if error.isRecoverable {
-            return .orange
+            return .blue
         } else {
             return .red
         }

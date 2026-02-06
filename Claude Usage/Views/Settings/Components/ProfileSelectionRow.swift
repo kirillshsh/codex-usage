@@ -50,7 +50,7 @@ struct ProfileSelectionRow: View {
                         MetricBadge(letter: "W", color: .purple)
                     }
                     if hasAPIMetric {
-                        MetricBadge(letter: "A", color: .orange)
+                        MetricBadge(letter: "A", color: .blue)
                     }
                 }
             }

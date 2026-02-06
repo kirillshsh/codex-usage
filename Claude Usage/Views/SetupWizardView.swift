@@ -550,7 +550,7 @@ struct ConfirmStepSetup: View {
                                 .padding(.vertical, 2)
                                 .background(
                                     RoundedRectangle(cornerRadius: 4)
-                                        .fill(Color.orange)
+                                        .fill(Color.accentColor)
                                 )
                         }
 

@@ -575,7 +575,7 @@ struct ConfirmStep: View {
                     HStack(spacing: 8) {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.system(size: 12))
-                            .foregroundColor(.orange)
+                            .foregroundColor(.blue)
                         Text("wizard.key_will_update".localized)
                             .font(.system(size: 11))
                             .foregroundColor(.secondary)

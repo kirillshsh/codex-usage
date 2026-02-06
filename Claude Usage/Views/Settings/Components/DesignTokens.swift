@@ -120,8 +120,8 @@ enum DesignTokens {
         /// Error state
         static let error = Color.red
 
-        /// Warning state
-        static let warning = Color.orange
+        /// Warning/accent state
+        static let warning = Color.blue
 
         /// Info/accent
         static let accent = Color.accentColor

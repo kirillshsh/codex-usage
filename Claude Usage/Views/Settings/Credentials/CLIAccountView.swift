@@ -125,7 +125,7 @@ struct CLIAccountView: View {
                                 HStack(spacing: DesignTokens.Spacing.small) {
                                     Image(systemName: "info.circle")
                                         .font(.system(size: DesignTokens.Icons.standard))
-                                        .foregroundColor(.orange)
+                                        .foregroundColor(.blue)
                                     Text("cli.sync_instructions".localized)
                                         .font(DesignTokens.Typography.body)
                                         .foregroundColor(.secondary)
@@ -217,9 +217,9 @@ struct CLIAccountView: View {
 
                             Text("cli.tracking_note".localized)
                                 .font(DesignTokens.Typography.caption)
-                                .foregroundColor(.orange)
+                                .foregroundColor(.blue)
                                 .padding(DesignTokens.Spacing.small)
-                                .background(Color.orange.opacity(0.08))
+                                .background(Color.blue.opacity(0.08))
                                 .cornerRadius(DesignTokens.Radius.tiny)
                         }
                     }
