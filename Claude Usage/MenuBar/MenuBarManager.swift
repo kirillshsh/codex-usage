@@ -980,7 +980,7 @@ class MenuBarManager: NSObject, ObservableObject {
             let hostingController = NSHostingController(rootView: settingsView)
 
             let window = NSWindow(contentViewController: hostingController)
-            window.title = "Claude Usage - Settings"
+            window.title = "Codex Usage - Settings"
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.setContentSize(NSSize(width: 720, height: 600))
             window.center()
