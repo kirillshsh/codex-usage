@@ -17,6 +17,7 @@ class CodexAPIService: APIServiceProtocol {
     private let sessionKeyValidator: SessionKeyValidator
     let baseURL = Constants.APIEndpoints.codexBase
     let consoleBaseURL = Constants.APIEndpoints.consoleBase
+    let chatGPTBackendURL = "https://chatgpt.com/backend-api"
 
     // MARK: - Initialization
 
@@ -373,96 +374,128 @@ class CodexAPIService: APIServiceProtocol {
     ///   - organizationId: The organization ID
     /// - Returns: CodexUsage data for the profile
     func fetchUsageData(sessionKey: String, organizationId: String) async throws -> CodexUsage {
-        if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
-            return snapshotUsage
+        do {
+            let usageData = try await performRequest(endpoint: "/organizations/\(organizationId)/usage", sessionKey: sessionKey)
+            return try parseUsageResponse(usageData)
+        } catch {
+            if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
+                LoggingService.shared.logWarning("CodexAPIService: Falling back to snapshot for profile usage (\(error.localizedDescription))")
+                return snapshotUsage
+            }
+            throw error
         }
-
-        let usageData = try await performRequest(endpoint: "/organizations/\(organizationId)/usage", sessionKey: sessionKey)
-        return try parseUsageResponse(usageData)
     }
 
     /// Fetches real usage data from Codex's API
     func fetchUsageData() async throws -> CodexUsage {
-        if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
-            return snapshotUsage
+        do {
+            let auth = try getAuthentication()
+
+            switch auth {
+            case .codexAISession(let sessionKey):
+                // Use existing codex.ai flow
+                let orgId = try await fetchOrganizationId(sessionKey: sessionKey)
+
+                async let usageDataTask = performRequest(endpoint: "/organizations/\(orgId)/usage", sessionKey: sessionKey)
+
+                // Use active profile's checkOverageLimitEnabled setting
+                let checkOverage = ProfileManager.shared.activeProfile?.checkOverageLimitEnabled ?? true
+                async let overageDataTask: Data? = checkOverage ? performRequest(endpoint: "/organizations/\(orgId)/overage_spend_limit", sessionKey: sessionKey) : nil
+
+                let usageData = try await usageDataTask
+                var codexUsage = try parseUsageResponse(usageData)
+
+                if checkOverage,
+                   let data = try? await overageDataTask,
+                   let overage = try? JSONDecoder().decode(OverageSpendLimitResponse.self, from: data),
+                   overage.isEnabled == true {
+                    codexUsage.costUsed = overage.usedCredits
+                    codexUsage.costLimit = overage.monthlyCreditLimit
+                    codexUsage.costCurrency = overage.currency
+                }
+
+                return codexUsage
+
+            case .cliOAuth(let accessToken):
+                // Codex CLI native rate limits endpoint (account-aware via ChatGPT-Account-ID).
+                let accountId = readActiveCLIAccountId()
+                LoggingService.shared.log("CodexAPIService: Fetching usage via /backend-api/wham/usage")
+                let whamData = try await fetchWHAMUsageData(accessToken: accessToken, accountId: accountId)
+                return try parseWHAMUsageResponse(whamData)
+
+            case .consoleAPISession:
+                // Console API is for billing/credits only, not usage data
+                throw AppError(
+                    code: .sessionKeyNotFound,
+                    message: "No valid credentials for usage data",
+                    technicalDetails: "Console API only provides billing data, not usage statistics",
+                    isRecoverable: true,
+                    recoverySuggestion: "Please add a codex.ai session key or sync your CLI account"
+                )
+            }
+        } catch {
+            if let snapshotUsage = CodexUsageSnapshotService.shared.loadUsageIfAvailable() {
+                LoggingService.shared.logWarning("CodexAPIService: Falling back to snapshot (\(error.localizedDescription))")
+                return snapshotUsage
+            }
+            throw error
+        }
+    }
+
+    private func readActiveCLIAccountId() -> String? {
+        if let cliJSON = ProfileManager.shared.activeProfile?.cliCredentialsJSON,
+           let accountId = CodexCodeSyncService.shared.extractAccountId(from: cliJSON),
+           !accountId.isEmpty {
+            return accountId
         }
 
-        let auth = try getAuthentication()
+        if let systemCredentials = try? CodexCodeSyncService.shared.readSystemCredentials(),
+           let accountId = CodexCodeSyncService.shared.extractAccountId(from: systemCredentials),
+           !accountId.isEmpty {
+            return accountId
+        }
 
-        switch auth {
-        case .codexAISession(let sessionKey):
-            // Use existing codex.ai flow
-            let orgId = try await fetchOrganizationId(sessionKey: sessionKey)
+        return nil
+    }
 
-            async let usageDataTask = performRequest(endpoint: "/organizations/\(orgId)/usage", sessionKey: sessionKey)
+    private func fetchWHAMUsageData(accessToken: String, accountId: String?) async throws -> Data {
+        let url = try URLBuilder(baseURL: chatGPTBackendURL)
+            .appendingPath("/wham/usage")
+            .build()
 
-            // Use active profile's checkOverageLimitEnabled setting
-            let checkOverage = ProfileManager.shared.activeProfile?.checkOverageLimitEnabled ?? true
-            async let overageDataTask: Data? = checkOverage ? performRequest(endpoint: "/organizations/\(orgId)/overage_spend_limit", sessionKey: sessionKey) : nil
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 30
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-            let usageData = try await usageDataTask
-            var codexUsage = try parseUsageResponse(usageData)
+        if let accountId, !accountId.isEmpty {
+            request.setValue(accountId, forHTTPHeaderField: "ChatGPT-Account-ID")
+        }
 
-            if checkOverage,
-               let data = try? await overageDataTask,
-               let overage = try? JSONDecoder().decode(OverageSpendLimitResponse.self, from: data),
-               overage.isEnabled == true {
-                codexUsage.costUsed = overage.usedCredits
-                codexUsage.costLimit = overage.monthlyCreditLimit
-                codexUsage.costCurrency = overage.currency
-            }
+        let (data, response) = try await URLSession.shared.data(for: request)
 
-            return codexUsage
-
-        case .cliOAuth:
-            // Use OAuth endpoint (no organization ID needed)
-            LoggingService.shared.log("CodexAPIService: Fetching usage via OAuth endpoint")
-
-            guard let url = URL(string: "https://api.anthropic.com/api/oauth/usage") else {
-                throw AppError(
-                    code: .urlMalformed,
-                    message: "Invalid OAuth usage endpoint",
-                    isRecoverable: false
-                )
-            }
-
-            var request = buildAuthenticatedRequest(url: url, auth: auth)
-            request.httpMethod = "GET"
-            request.timeoutInterval = 30
-
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw AppError(
-                    code: .apiInvalidResponse,
-                    message: "Invalid response from OAuth endpoint",
-                    isRecoverable: true
-                )
-            }
-
-            guard httpResponse.statusCode == 200 else {
-                let responsePreview = String(data: data, encoding: .utf8)?.prefix(200) ?? "Unable to read response"
-                throw AppError(
-                    code: .apiUnauthorized,
-                    message: "OAuth authentication failed",
-                    technicalDetails: "Status: \(httpResponse.statusCode)\nResponse: \(responsePreview)",
-                    isRecoverable: true,
-                    recoverySuggestion: "Please re-sync your CLI account in Settings"
-                )
-            }
-
-            return try parseUsageResponse(data)
-
-        case .consoleAPISession:
-            // Console API is for billing/credits only, not usage data
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw AppError(
-                code: .sessionKeyNotFound,
-                message: "No valid credentials for usage data",
-                technicalDetails: "Console API only provides billing data, not usage statistics",
-                isRecoverable: true,
-                recoverySuggestion: "Please add a codex.ai session key or sync your CLI account"
+                code: .apiInvalidResponse,
+                message: "Invalid response from Codex usage endpoint",
+                isRecoverable: true
             )
         }
+
+        guard httpResponse.statusCode == 200 else {
+            let responsePreview = String(data: data, encoding: .utf8)?.prefix(240) ?? "Unable to read response"
+            throw AppError(
+                code: .apiUnauthorized,
+                message: "Codex usage endpoint authentication failed",
+                technicalDetails: "Status: \(httpResponse.statusCode)\nResponse: \(responsePreview)",
+                isRecoverable: true,
+                recoverySuggestion: "Please re-login in Codex CLI and re-import the account"
+            )
+        }
+
+        return data
     }
 
     private func performRequest(endpoint: String, sessionKey: String) async throws -> Data {
@@ -667,6 +700,70 @@ class CodexAPIService: APIServiceProtocol {
         )
     }
 
+    private func parseWHAMUsageResponse(_ data: Data) throws -> CodexUsage {
+        do {
+            let decoder = JSONDecoder()
+            let payload = try decoder.decode(WHAMUsageResponse.self, from: data)
+
+            let now = Date()
+            let sessionUsedPercent = normalizePercent(payload.rateLimit?.primaryWindow?.usedPercent)
+            let weeklyUsedPercent = normalizePercent(payload.rateLimit?.secondaryWindow?.usedPercent)
+
+            let sessionResetTime = parseWHAMResetDate(
+                resetAtEpoch: payload.rateLimit?.primaryWindow?.resetAt,
+                resetAfterSeconds: payload.rateLimit?.primaryWindow?.resetAfterSeconds,
+                fallbackSeconds: 5 * 60 * 60,
+                now: now
+            )
+
+            let weeklyResetTime = parseWHAMResetDate(
+                resetAtEpoch: payload.rateLimit?.secondaryWindow?.resetAt,
+                resetAfterSeconds: payload.rateLimit?.secondaryWindow?.resetAfterSeconds,
+                fallbackSeconds: 7 * 24 * 60 * 60,
+                now: now
+            )
+
+            let weeklyLimit = Constants.weeklyLimit
+            let weeklyTokens = Int((Double(weeklyLimit) * (weeklyUsedPercent / 100.0)).rounded())
+
+            return CodexUsage(
+                sessionTokensUsed: 0,
+                sessionLimit: 0,
+                sessionPercentage: sessionUsedPercent,
+                sessionResetTime: sessionResetTime,
+                weeklyTokensUsed: max(0, weeklyTokens),
+                weeklyLimit: weeklyLimit,
+                weeklyPercentage: weeklyUsedPercent,
+                weeklyResetTime: weeklyResetTime,
+                opusWeeklyTokensUsed: 0,
+                opusWeeklyPercentage: 0,
+                sonnetWeeklyTokensUsed: 0,
+                sonnetWeeklyPercentage: 0,
+                sonnetWeeklyResetTime: nil,
+                costUsed: nil,
+                costLimit: nil,
+                costCurrency: nil,
+                lastUpdated: now,
+                userTimezone: .current
+            )
+        } catch let error as AppError {
+            throw error
+        } catch {
+            if DataStore.shared.loadDebugAPILoggingEnabled(),
+               let responseString = String(data: data, encoding: .utf8) {
+                LoggingService.shared.logDebug("Failed to parse WHAM usage response: \(responseString)")
+            }
+
+            throw AppError(
+                code: .apiParsingFailed,
+                message: "Failed to parse Codex usage response",
+                technicalDetails: error.localizedDescription,
+                underlyingError: error,
+                isRecoverable: true
+            )
+        }
+    }
+
     // MARK: - Parsing Helpers
 
     /// Robust utilization parser that handles Int, Double, or String types
@@ -697,6 +794,28 @@ class CodexAPIService: APIServiceProtocol {
         // Log warning if we couldn't parse
         LoggingService.shared.logWarning("Failed to parse utilization value: \(value) (type: \(type(of: value)))")
         return 0.0
+    }
+
+    private func parseWHAMResetDate(
+        resetAtEpoch: Int?,
+        resetAfterSeconds: Int?,
+        fallbackSeconds: Int,
+        now: Date
+    ) -> Date {
+        if let resetAtEpoch, resetAtEpoch > 0 {
+            return Date(timeIntervalSince1970: TimeInterval(resetAtEpoch))
+        }
+
+        if let resetAfterSeconds, resetAfterSeconds > 0 {
+            return now.addingTimeInterval(TimeInterval(resetAfterSeconds))
+        }
+
+        return now.addingTimeInterval(TimeInterval(max(1, fallbackSeconds)))
+    }
+
+    private func normalizePercent(_ value: Double?) -> Double {
+        guard let value, value.isFinite else { return 0.0 }
+        return min(max(value, 0.0), 100.0)
     }
 
     // MARK: - Session Initialization

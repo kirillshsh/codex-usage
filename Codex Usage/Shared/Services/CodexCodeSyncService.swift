@@ -34,6 +34,12 @@ struct CodexCLIAccount: Codable, Identifiable, Equatable {
     }
 }
 
+struct CodexCLIAccountUsagePreview: Equatable {
+    let sessionRemainingPercent: Double
+    let weeklyRemainingPercent: Double
+    let combinedRemainingPercent: Double
+}
+
 private struct CodexCLIAccountStore: Codable {
     var accounts: [CodexCLIAccount]
 }
@@ -44,6 +50,8 @@ class CodexCodeSyncService: ObservableObject {
 
     @Published private(set) var savedAccounts: [CodexCLIAccount] = []
     @Published private(set) var activeAccountEmail: String?
+    @Published private(set) var activeAccountId: UUID?
+    @Published private(set) var activeAccountDisplayName: String?
 
     private var codexAuthFileURL: URL {
         Constants.CodexPaths.codexDirectory.appendingPathComponent("auth.json")
@@ -108,6 +116,20 @@ class CodexCodeSyncService: ObservableObject {
     func refreshSavedAccounts() {
         do {
             var accounts = try loadSavedAccountsFromDisk()
+            var activeAccount: CodexCLIAccount?
+
+            // Keep persisted account metadata in sync with the latest parsable auth payload.
+            for index in accounts.indices {
+                if let parsedEmail = extractEmail(from: accounts[index].authJSON)?
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+                   !parsedEmail.isEmpty {
+                    accounts[index].email = parsedEmail
+                }
+
+                if let parsedAccountId = extractAccountId(from: accounts[index].authJSON) {
+                    accounts[index].accountId = parsedAccountId
+                }
+            }
 
             if let currentAuthJSON = try readSystemCredentials() {
                 let email = extractEmail(from: currentAuthJSON) ?? "unknown@codex.local"
@@ -115,13 +137,15 @@ class CodexCodeSyncService: ObservableObject {
                 let now = Date()
 
                 if let index = findAccountIndex(in: accounts, email: email, accountId: accountId) {
+                    accounts[index].email = email
                     accounts[index].authJSON = currentAuthJSON
                     accounts[index].lastUsedAt = now
                     if accounts[index].accountId == nil {
                         accounts[index].accountId = accountId
                     }
+                    activeAccount = accounts[index]
                 } else {
-                    accounts.append(
+                    let createdAccount =
                         CodexCLIAccount(
                             email: email,
                             accountId: accountId,
@@ -129,20 +153,20 @@ class CodexCodeSyncService: ObservableObject {
                             addedAt: now,
                             lastUsedAt: now
                         )
-                    )
+                    accounts.append(createdAccount)
+                    activeAccount = createdAccount
                 }
-
-                activeAccountEmail = email
             } else {
-                activeAccountEmail = nil
+                activeAccount = nil
             }
 
             try saveSavedAccountsToDisk(accounts)
             savedAccounts = accounts.sorted(by: { $0.lastUsedAt > $1.lastUsedAt })
+            updateActiveAccountState(activeAccount)
         } catch {
             LoggingService.shared.logError("Failed to refresh saved Codex CLI accounts", error: error)
             savedAccounts = []
-            activeAccountEmail = nil
+            updateActiveAccountState(nil)
         }
     }
 
@@ -160,6 +184,7 @@ class CodexCodeSyncService: ObservableObject {
 
         let account: CodexCLIAccount
         if let index = findAccountIndex(in: accounts, email: email, accountId: accountId) {
+            accounts[index].email = email
             accounts[index].authJSON = currentAuthJSON
             accounts[index].lastUsedAt = now
             if accounts[index].accountId == nil {
@@ -180,7 +205,7 @@ class CodexCodeSyncService: ObservableObject {
 
         try saveSavedAccountsToDisk(accounts)
         savedAccounts = accounts.sorted(by: { $0.lastUsedAt > $1.lastUsedAt })
-        activeAccountEmail = email
+        updateActiveAccountState(account)
 
         LoggingService.shared.log("Imported current Codex CLI account: \(email)")
         return account
@@ -202,7 +227,7 @@ class CodexCodeSyncService: ObservableObject {
 
         try saveSavedAccountsToDisk(accounts)
         savedAccounts = accounts.sorted(by: { $0.lastUsedAt > $1.lastUsedAt })
-        activeAccountEmail = selected.email
+        updateActiveAccountState(selected)
 
         LoggingService.shared.log("Switched Codex CLI account to: \(selected.email)")
         return selected
@@ -423,11 +448,150 @@ class CodexCodeSyncService: ObservableObject {
 
         if let tokens = json["tokens"] as? [String: Any],
            let accountId = tokens["account_id"] as? String,
-           !accountId.isEmpty {
-            return accountId
+           let normalized = normalizeIdentifier(accountId) {
+            return normalized
+        }
+
+        if let accessToken = extractAccessToken(from: jsonData),
+           let claims = decodeJWTClaims(from: accessToken),
+           let authData = claims["https://api.openai.com/auth"] as? [String: Any],
+           let accountId = authData["chatgpt_account_id"] as? String,
+           let normalized = normalizeIdentifier(accountId) {
+            return normalized
+        }
+
+        if let tokens = json["tokens"] as? [String: Any],
+           let idToken = tokens["id_token"] as? String,
+           let claims = decodeJWTClaims(from: idToken),
+           let authData = claims["https://api.openai.com/auth"] as? [String: Any],
+           let accountId = authData["chatgpt_account_id"] as? String,
+           let normalized = normalizeIdentifier(accountId) {
+            return normalized
         }
 
         return nil
+    }
+
+    func extractTeamName(from jsonData: String) -> String? {
+        guard let json = try? parseJSONObject(from: jsonData) else {
+            return nil
+        }
+
+        // Legacy format fallback
+        if let oauth = json["codexAiOauth"] as? [String: Any],
+           let organizationName = oauth["organizationName"] as? String,
+           let normalized = normalizeTeamName(organizationName) {
+            return normalized
+        }
+
+        guard let tokens = json["tokens"] as? [String: Any],
+              let idToken = tokens["id_token"] as? String,
+              let claims = decodeJWTClaims(from: idToken),
+              let authData = claims["https://api.openai.com/auth"] as? [String: Any] else {
+            return nil
+        }
+
+        // Sometimes auth payload can expose a direct workspace/team title.
+        let directKeys = ["team_name", "workspace_name", "organization_name", "org_name"]
+        for key in directKeys {
+            if let rawValue = authData[key] as? String,
+               let normalized = normalizeTeamName(rawValue) {
+                return normalized
+            }
+        }
+
+        guard let organizations = authData["organizations"] as? [[String: Any]],
+              !organizations.isEmpty else {
+            return nil
+        }
+
+        if let defaultOrganization = organizations.first(where: { ($0["is_default"] as? Bool) == true }),
+           let title = defaultOrganization["title"] as? String,
+           let normalized = normalizeTeamName(title) {
+            return normalized
+        }
+
+        for organization in organizations {
+            if let title = organization["title"] as? String,
+               let normalized = normalizeTeamName(title) {
+                return normalized
+            }
+        }
+
+        return nil
+    }
+
+    func displayName(for account: CodexCLIAccount) -> String {
+        let cleanEmail = account.email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let email = cleanEmail.isEmpty ? "unknown@codex.local" : cleanEmail
+
+        let subscriptionType = extractSubscriptionInfo(from: account.authJSON)?.type.lowercased() ?? "unknown"
+        guard subscriptionType.contains("team") else {
+            return email
+        }
+
+        if let teamName = extractTeamName(from: account.authJSON) {
+            return "\(email) (\(teamName))"
+        }
+
+        if let accountId = normalizeIdentifier(account.accountId) {
+            return "\(email) (Team \(accountId.prefix(8)))"
+        }
+
+        return "\(email) (Team)"
+    }
+
+    func fetchUsagePreview(for account: CodexCLIAccount) async -> CodexCLIAccountUsagePreview? {
+        guard let accessToken = extractAccessToken(from: account.authJSON),
+              !accessToken.isEmpty else {
+            return nil
+        }
+
+        let endpoint = "https://chatgpt.com/backend-api/wham/usage"
+        guard let url = URL(string: endpoint) else {
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 20
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let accountId = account.accountId?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !accountId.isEmpty {
+            request.setValue(accountId, forHTTPHeaderField: "ChatGPT-Account-ID")
+        }
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                return nil
+            }
+
+            let decoder = JSONDecoder()
+            let payload = try decoder.decode(CodexAPIService.WHAMUsageResponse.self, from: data)
+
+            let sessionUsed = normalizePercent(payload.rateLimit?.primaryWindow?.usedPercent)
+            let weeklyUsed = normalizePercent(payload.rateLimit?.secondaryWindow?.usedPercent)
+
+            let sessionRemaining = max(0, 100 - sessionUsed)
+            let weeklyRemaining = max(0, 100 - weeklyUsed)
+            let combinedRemaining = min(sessionRemaining, weeklyRemaining)
+
+            return CodexCLIAccountUsagePreview(
+                sessionRemainingPercent: sessionRemaining,
+                weeklyRemainingPercent: weeklyRemaining,
+                combinedRemainingPercent: combinedRemaining
+            )
+        } catch {
+            LoggingService.shared.log(
+                "Failed to fetch usage preview for account \(account.email): \(error.localizedDescription)"
+            )
+            return nil
+        }
     }
 
     // MARK: - Auto Re-sync Before Switching
@@ -466,6 +630,50 @@ class CodexCodeSyncService: ObservableObject {
     }
 
     // MARK: - Private Helpers
+
+    private func updateActiveAccountState(_ account: CodexCLIAccount?) {
+        activeAccountId = account?.id
+        activeAccountEmail = account?.email
+
+        if let account {
+            activeAccountDisplayName = displayName(for: account)
+        } else {
+            activeAccountDisplayName = nil
+        }
+    }
+
+    private func normalizeTeamName(_ rawName: String?) -> String? {
+        guard let rawName else { return nil }
+        let cleaned = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return nil }
+
+        // "Personal" is not a real team/workspace name for Team accounts.
+        if cleaned.caseInsensitiveCompare("personal") == .orderedSame {
+            return nil
+        }
+
+        return cleaned
+    }
+
+    private func normalizePercent(_ value: Double?) -> Double {
+        guard let value, value.isFinite else {
+            return 0.0
+        }
+        return min(max(value, 0.0), 100.0)
+    }
+
+    private func normalizeIdentifier(_ value: String?) -> String? {
+        guard let value else {
+            return nil
+        }
+
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            return nil
+        }
+
+        return trimmed
+    }
 
     private func parseJSONObject(from jsonData: String) throws -> [String: Any] {
         guard let data = jsonData.data(using: .utf8),
@@ -507,14 +715,32 @@ class CodexCodeSyncService: ObservableObject {
         email: String,
         accountId: String?
     ) -> Int? {
-        if let accountId,
-           let idx = accounts.firstIndex(where: { $0.accountId == accountId }) {
-            return idx
+        let normalizedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let normalizedAccountId = normalizeIdentifier(accountId)?.lowercased()
+
+        if let normalizedAccountId {
+            if let idx = accounts.firstIndex(where: {
+                normalizeIdentifier($0.accountId)?.lowercased() == normalizedAccountId
+            }) {
+                return idx
+            }
+
+            // Legacy migration path: if an old account entry has same email but no accountId,
+            // upgrade that entry with the resolved accountId instead of creating a duplicate.
+            if let idx = accounts.firstIndex(where: {
+                $0.email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedEmail &&
+                normalizeIdentifier($0.accountId) == nil
+            }) {
+                return idx
+            }
+
+            // IMPORTANT: do not fall back to email when accountId is present but differs.
+            // This prevents merging multiple workspaces that share one email.
+            return nil
         }
 
         return accounts.firstIndex {
-            $0.email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ==
-            email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            $0.email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedEmail
         }
     }
 

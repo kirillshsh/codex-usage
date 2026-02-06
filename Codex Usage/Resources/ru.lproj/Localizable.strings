@@ -1,0 +1,703 @@
+/*
+   Localizable.strings
+   Codex Usage Tracker
+
+   English (Base Language)
+   Created by Codex Code on 2025-12-27.
+*/
+
+/* ==================== */
+/* MARK: - App Info */
+/* ==================== */
+"app.name" = "Отслеживание использования Кодекса";
+"app.window.main" = "Использование Кодекса";
+"app.window.settings" = "Настройки";
+"app.window.github_prompt" = "Поддержка отслеживания использования Кодекса";
+
+/* ==================== */
+/* MARK: - Common Actions */
+/* ==================== */
+"common.ok" = "ХОРОШО";
+"common.cancel" = "Отмена";
+"common.save" = "Сохранять";
+"common.delete" = "Удалить";
+"common.done" = "Сделанный";
+"common.close" = "Закрывать";
+"common.refresh" = "Обновить";
+"common.settings" = "Настройки";
+"common.quit" = "Покидать";
+"common.validate" = "Подтвердить";
+"common.yes" = "Да";
+"common.no" = "Нет";
+
+/* ==================== */
+/* MARK: - Settings Navigation */
+/* ==================== */
+"settings.title" = "Настройки";
+"settings.personal_usage" = "Личное использование";
+"settings.personal_usage.description" = "Отслеживайте использование уровня бесплатного пользования Codex.ai";
+"settings.api_billing" = "Биллинг API";
+"settings.api_billing.description" = "Отслеживание выставления счетов и кредитов в консоли API";
+"settings.general" = "Общий";
+"settings.general.description" = "Поведение и предпочтения приложения";
+"settings.appearance" = "Появление";
+"settings.appearance.description" = "Настройка значков в строке меню";
+"settings.session_management" = "Управление сеансами";
+"settings.session_management.description" = "Автоматическое управление сеансами";
+"settings.notifications" = "Уведомления";
+"settings.notifications.description" = "Оповещения и уведомления об использовании";
+"settings.codex_cli" = "Интерфейс командной строки Кодекса";
+"settings.codex_cli.description" = "Интеграция со статусной строкой терминала";
+"settings.updates" = "Обновления";
+"settings.updates.description" = "Поддерживайте свое приложение в актуальном состоянии";
+"settings.about" = "О";
+"settings.about.description" = "Информация о приложении и кредиты";
+
+/* ==================== */
+/* MARK: - Menu Bar */
+/* ==================== */
+"menubar.codex_usage" = "Использование Кодекса";
+"menubar.session_usage" = "Использование сеанса";
+"menubar.weekly_usage" = "Еженедельно";
+"menubar.opus_usage" = "Опус";
+"menubar.sonnet_usage" = "Сонет";
+"menubar.extra_usage" = "Дополнительное использование";
+"menubar.api_credits" = "Кредиты API";
+"menubar.5_hour_window" = "5-часовое скользящее окно";
+"menubar.all_models" = "Недельный лимит";
+"menubar.weekly" = "Еженедельно";
+"menubar.anthropic_console" = "Антропная консоль API";
+"menubar.used" = "Использовал";
+"menubar.remaining" = "Оставшийся";
+"menubar.resets_time" = "Сбрасывает %@";
+"menubar.click_status" = "Нажмите, чтобы открыть status.codex.com";
+
+/* ==================== */
+/* MARK: - Usage Status */
+/* ==================== */
+"usage.high_session" = "Высокая загрузка сеансов";
+"usage.high_session.desc" = "Рассмотрите возможность сделать перерыв, чтобы сбросить окно сеанса.";
+"usage.weekly_approaching" = "Приближается недельный лимит";
+"usage.weekly_approaching.desc" = "Вы близки к недельному лимиту токенов";
+"usage.efficient" = "Эффективное использование";
+"usage.efficient.desc" = "Отличная работа по управлению потреблением токенов!";
+
+/* ==================== */
+/* MARK: - General Settings */
+/* ==================== */
+"general.launch_at_login" = "Запуск при входе в систему";
+"general.launch_at_login.description" = "Автоматически запускать Codex Usage Tracker при входе на свой Mac";
+"general.refresh_interval" = "Интервал обновления";
+"general.refresh_interval.description" = "Более короткие интервалы обеспечивают больше данных в реальном времени, но могут повлиять на срок службы батареи.";
+"general.check_overage_limit" = "Проверьте дополнительный лимит использования";
+"general.check_overage_limit.description" = "Получение и отображение информации о ежемесячных расходах и лимите превышения";
+"general.language.title" = "Язык";
+"general.language.select" = "Выберите язык";
+"general.language.restart_note" = "Изменения языка вступят в силу после перезапуска приложения.";
+"general.language.restart_app" = "Перезапустите приложение, чтобы применить";
+
+/* ==================== */
+/* MARK: - Appearance Settings */
+/* ==================== */
+"appearance.menu_bar_icons" = "Значки строки меню";
+"appearance.menu_bar_icons.subtitle" = "Настройте, какие показатели будут отображаться в строке меню.";
+"appearance.show_icon_names" = "Показать названия значков";
+"appearance.show_icon_names.description" = "Отображать метки метрик (S:, W:, API:) рядом со значками.";
+"appearance.monochrome_mode" = "Монохромный (адаптивный)";
+"appearance.monochrome_mode.description" = "Иконки автоматически адаптируются к светлому/темному режиму";
+"appearance.metric_configuration" = "Метрическая конфигурация";
+"appearance.drag_to_reorder" = "Перетащите, чтобы изменить порядок значков. Отключенные метрики скрыты из строки меню.";
+
+/* ==================== */
+/* MARK: - Session Management */
+/* ==================== */
+"session.auto_start" = "Автозапуск сеанса при сбросе";
+"session.auto_start.description" = "Автоматически отправлять «Привет» в Кодекс, когда ваш сеанс сбрасывается до 0%. Благодаря этому ваш сеанс всегда будет готов без ручного вмешательства.";
+"session.enable_auto_start" = "Включить автозапуск сеанса";
+"session.beta_badge" = "БЕТА";
+
+/* ==================== */
+/* MARK: - Notifications Settings */
+/* ==================== */
+"notifications.enable" = "Включить уведомления";
+"notifications.enable.description" = "Получайте оповещения при приближении к лимитам использования.";
+"notifications.alert_thresholds" = "Пороги оповещений";
+"notifications.threshold.warning" = "Предупреждение";
+"notifications.threshold.high" = "Высокое использование";
+"notifications.threshold.critical" = "Критический";
+"notifications.threshold.session_reset" = "Сброс сеанса";
+
+/* ==================== */
+/* MARK: - Setup Wizard */
+/* ==================== */
+"setup.welcome.title" = "Добро пожаловать в систему отслеживания использования Кодекса";
+"setup.welcome.subtitle" = "Настройте доступ к API, чтобы начать отслеживать использование.";
+"setup.step.get_session_key" = "Получите сеансовый ключ";
+"setup.step.get_session_key.description" = "Вам нужно будет извлечь сеансовый ключ из codex.ai.";
+"setup.step.enter_session_key" = "Введите свой сеансовый ключ";
+"setup.open_codex_ai" = "Открыть codex.ai";
+"setup.show_instructions" = "Показать инструкции";
+"setup.hide_instructions" = "Скрывать";
+"setup.instruction.step1" = "Откройте инструменты разработчика (F12 или Cmd+Option+I)";
+"setup.instruction.step2" = "Перейдите в Приложение/Хранилище → Файлы cookie → https://codex.ai.";
+"setup.instruction.step3" = "Найдите файл cookie sessionKey.";
+"setup.instruction.step4" = "Дважды щелкните его значение и скопируйте (Cmd+C).";
+"setup.paste_session_key" = "Вставьте скопированное значение sessionKey.";
+"setup.auto_start_session" = "Автозапуск сеанса при сбросе";
+"setup.auto_start_session.description" = "Автоматически отправлять «Привет» в Codex 3.5 Haiku, когда ваш сеанс сбрасывается до 0%. Благодаря этому ваш сеанс всегда будет готов без ручного вмешательства.";
+"setup.enable_auto_start" = "Включить автозапуск сеанса";
+"setup.menubar_appearance" = "Внешний вид строки меню";
+"setup.choose_icon_style" = "Выберите предпочитаемый стиль значков";
+"setup.monochrome_adaptive" = "Монохромный (адаптивный)";
+"setup.validation.success" = "Успешно подключено к организации";
+
+/* ==================== */
+/* MARK: - About */
+/* ==================== */
+"about.version" = "Версия %@";
+"about.check_updates" = "Проверьте наличие обновлений";
+"about.created_by" = "Создано";
+"about.contributors" = "Участники (%d)";
+"about.contributors_loading" = "Авторы";
+"about.links" = "Ссылки";
+"about.star_github" = "Звезда на GitHub";
+"about.report_issue" = "Сообщить о проблеме";
+"about.send_feedback" = "Отправить отзыв";
+"about.mit_license" = "Лицензия MIT • Открытый исходный код";
+"about.copyright" = "© 2025 Хамед Эльфайоме";
+
+/* ==================== */
+/* MARK: - Updates Settings */
+/* ==================== */
+"settings.updates.title" = "Обновления программного обеспечения";
+"settings.updates.current_version" = "Текущая версия";
+"settings.updates.last_check" = "Последняя проверка";
+"settings.updates.never_checked" = "Никогда";
+"settings.updates.automatic" = "Автоматические обновления";
+"settings.updates.automatic.description" = "Автоматически проверяйте и загружайте обновления ежедневно.";
+"settings.updates.check_now" = "Проверьте наличие обновлений";
+"settings.updates.info.title" = "Безопасные обновления";
+"settings.updates.info.description" = "Все обновления криптографически подписаны и проверены перед установкой.";
+
+/* ==================== */
+/* MARK: - Icon Styles */
+/* ==================== */
+"icon_style.battery" = "Батарея";
+"icon_style.percentage" = "Процент";
+"icon_style.text_only" = "Только текст";
+"icon_style.minimal" = "Минимальный";
+
+/* ==================== */
+/* MARK: - Metric Types */
+/* ==================== */
+"metric.session_usage" = "Использование сеанса";
+"metric.session_usage.description" = "5-часовое использование скользящего окна";
+"metric.week_usage" = "Неделя использования";
+"metric.week_usage.description" = "Еженедельное использование токенов (все модели)";
+"metric.api_credits" = "Кредиты API";
+"metric.api_credits.description" = "Платежные кредиты консоли API";
+
+/* ==================== */
+/* MARK: - Display Modes */
+/* ==================== */
+"display.remaining_credits" = "Оставшиеся кредиты";
+"display.remaining_credits.description" = "Показать только оставшиеся кредиты";
+"display.used_amount" = "Использованное количество";
+"display.used_amount.description" = "Показать только потраченную сумму";
+"display.both_used_total" = "Оба (Использовано/Всего)";
+"display.both_used_total.description" = "Показать использованные и общие";
+"display.percentage" = "Процент";
+"display.percentage.description" = "Показать в процентах (например, 60%)";
+"display.token_count" = "Количество токенов";
+"display.token_count.description" = "Показать номера токенов (например, 600 КБ/1 М)";
+
+/* ==================== */
+/* MARK: - Notification Messages */
+/* ==================== */
+"notification.session_warning.title" = "Предупреждение об использовании сеанса";
+"notification.session_warning.message" = "Вы использовали %@ из 5-часового лимита сеансов. %@";
+"notification.session_critical.title" = "Критическое использование сеанса";
+"notification.session_critical.message" = "Вы использовали %@ из 5-часового лимита сеансов! %@";
+"notification.session_reset.title" = "Сброс сеанса";
+"notification.session_reset.message" = "Ваша сессия сброшена! Теперь у вас есть новый 5-часовой сеанс.";
+"notification.session_auto_started.title" = "Сеанс запущен автоматически";
+"notification.session_auto_started.message" = "Новый сеанс был автоматически инициализирован. Ваша новая 5-часовая сессия готова!";
+"notification.session_auto_start_failed.title" = "Не удалось выполнить автозапуск";
+"notification.session_auto_start_failed.message" = "Не удалось автоматически запустить сеанс. Пожалуйста, проверьте свои учетные данные.";
+"notification.weekly_warning.title" = "Предупреждение о еженедельном использовании";
+"notification.weekly_warning.message" = "Вы израсходовали %@ своего недельного лимита. %@";
+"notification.weekly_critical.title" = "Критическое еженедельное использование";
+"notification.weekly_critical.message" = "Вы использовали %@ своего недельного лимита! %@";
+"notification.opus_warning.title" = "Предупреждение об использовании Opus";
+"notification.opus_warning.message" = "Вы использовали %@ своего недельного лимита Opus. %@";
+"notification.opus_critical.title" = "Критическое использование опуса";
+"notification.opus_critical.message" = "Вы использовали %@ своего недельного лимита Opus! %@";
+"notification.enabled.title" = "Уведомления включены";
+"notification.enabled.message" = "Теперь вы будете получать оповещения при пороговых значениях использования 75 %, 90 % и 95 %, а также уведомления о сбросе сеанса.";
+
+/* ==================== */
+/* MARK: - Error Messages */
+/* ==================== */
+"error.session_key_not_found" = "Сеансовый ключ не найден";
+"error.session_key_not_found.suggestion" = "Пожалуйста, настройте сеансовый ключ Кодекса в настройках.";
+"error.session_key_invalid" = "Неверный сеансовый ключ";
+"error.session_key_invalid.suggestion" = "Пожалуйста, проверьте формат сеансового ключа. Оно должно начинаться с «sk-ant-».";
+"error.network_unavailable" = "Нет подключения к Интернету";
+"error.network_unavailable.suggestion" = "Пожалуйста, проверьте подключение к Интернету и повторите попытку.";
+"error.network_timeout" = "Время запроса истекло";
+"error.network_timeout.suggestion" = "Пожалуйста, попробуйте еще раз. Если проблема не устранена, проверьте статус Кодекса на сайте status.codex.com.";
+"error.api_unauthorized" = "Несанкционированный доступ";
+"error.api_unauthorized.suggestion" = "Возможно, срок действия вашего сеансового ключа истек. Пожалуйста, обновите его в настройках";
+"error.api_server_error" = "Ошибка сервера";
+"error.api_server_error.suggestion" = "На сервере произошла ошибка. Пожалуйста, повторите попытку позже";
+"error.api_rate_limited" = "Превышен лимит скорости";
+"error.api_rate_limited.suggestion" = "Пожалуйста, подождите несколько минут, прежде чем повторить попытку.";
+
+/* ==================== */
+/* MARK: - Validation Messages */
+/* ==================== */
+"validation.session_key_too_short" = "Сессионный ключ слишком короткий";
+"validation.session_key_too_long" = "Сессионный ключ слишком длинный";
+"validation.invalid_prefix" = "Неверный префикс сеансового ключа.";
+"validation.invalid_characters" = "Недопустимые символы в сеансовом ключе";
+"validation.invalid_format" = "Неверный формат сеансового ключа.";
+"validation.contains_whitespace" = "Ключ сеанса содержит пробелы";
+
+/* ==================== */
+/* MARK: - GitHub Star Prompt */
+/* ==================== */
+"github.enjoy_app" = "Нравится трекер использования Кодекса?";
+"github.star_description" = "Если это приложение оказалось полезным, рассмотрите возможность размещения его на GitHub! Это помогает другим узнать о проекте и мотивирует на дальнейшее развитие.";
+"github.star_button" = "Звезда на GitHub";
+"github.maybe_later" = "Может быть, позже";
+"github.never_show" = "Больше не показывать";
+
+/* ==================== */
+/* MARK: - API Settings */
+/* ==================== */
+"api.enable_tracking" = "Включить отслеживание API";
+"api.enable_tracking.description" = "Отслеживайте свои кредиты и расходы на консоли Anthropic API.";
+"api.session_key_placeholder" = "sk-ant-api03-...";
+"api.configure" = "Настройка отслеживания API";
+"api.configure.description" = "Отслеживайте использование и кредиты API Anthropic Console.";
+"api.instructions" = "Чтобы отслеживать использование API, вам необходимо предоставить ключ сеанса API:";
+"api.instruction_step1" = "Войдите на console.anthropic.com.";
+"api.instruction_step2" = "Откройте инструменты разработчика (F12 или Cmd+Option+I)";
+"api.instruction_step3" = "Перейдите в Приложение → Файлы cookie → https://console.anthropic.com.";
+"api.instruction_step4" = "Найдите «sessionKey» и скопируйте его значение.";
+
+/* ==================== */
+/* MARK: - Personal Usage */
+/* ==================== */
+"personal.configure" = "Настройка личного использования";
+"personal.configure.description" = "Отслеживайте использование уровня бесплатного пользования на codex.ai.";
+"personal.status" = "Статус";
+"personal.session_key" = "Сеансовый ключ";
+"personal.session_key.configured" = "Настроен";
+"personal.session_key.not_configured" = "Не настроено";
+"personal.reconfigure" = "Переконфигурировать";
+"personal.remove" = "Удалить сеансовый ключ";
+
+/* ==================== */
+/* MARK: - Codex Code (CLI) */
+/* ==================== */
+"codexcode.title" = "Интеграция CLI Кодекса";
+"codexcode.description" = "Отображать информацию об использовании в строке состояния вашего терминала";
+"codexcode.coming_soon" = "Вскоре";
+"codexcode.features_description" = "Интеграция с Codex Code CLI для отображения строки состояния терминала появится в будущем обновлении.";
+
+/* ==================== */
+/* MARK: - Additional UI Labels */
+/* ==================== */
+"ui.app_behavior" = "Поведение приложения";
+"ui.usage_tracking" = "Отслеживание использования";
+"ui.global_settings" = "Глобальные настройки";
+"ui.menu_bar_metrics" = "Показатели строки меню";
+"ui.quick_actions" = "Быстрые действия";
+"ui.how_it_works" = "Как это работает";
+"ui.display_components" = "Компоненты дисплея";
+"ui.requirements" = "Требования";
+"ui.live_preview" = "Живой просмотр";
+"ui.updates_realtime" = "Обновления в режиме реального времени";
+"ui.organization" = "Организация";
+"ui.icon_style" = "Стиль значка";
+"ui.display_mode" = "Режим отображения";
+"ui.at_least_one_metric" = "Должен быть включен хотя бы один показатель.";
+
+/* ==================== */
+/* MARK: - Session Management (Additional) */
+/* ==================== */
+"session.subtitle" = "Автоматическая инициализация и обслуживание сеанса";
+"session.auto_description_line1" = "• Обнаруживает, когда сеанс сбрасывается до 0 %.";
+"session.auto_description_line2" = "• Отправляет «Привет» в Codex 3.5 Haiku (самая дешевая модель).";
+"session.auto_description_line3" = "• Использует временный чат, который не отображается в вашей истории.";
+"session.auto_description_line4" = "• Новый 5-часовой сеанс готов мгновенно.";
+
+/* ==================== */
+/* MARK: - Codex CLI (Additional) */
+/* ==================== */
+"codexcode.subtitle" = "Настройте отображение строки состояния вашего терминала";
+"codexcode.preview_label" = "Живой просмотр";
+"codexcode.preview_description" = "Вот как ваша строка статуса будет выглядеть в интерфейсе командной строки Codex.";
+"codexcode.component_directory" = "Имя каталога";
+"codexcode.component_branch" = "Git-ветвь";
+"codexcode.component_usage" = "Статистика использования";
+"codexcode.component_progressbar" = "Индикатор выполнения";
+"codexcode.component_resettime" = "Сбросить время";
+"codexcode.requirement_sessionkey" = "• Ключ сеанса настраивается на вкладке «Учетные данные» → Codex.ai.";
+"codexcode.requirement_restart" = "• Перезапустите интерфейс командной строки Codex после применения изменений.";
+"codexcode.error_no_components" = "Пожалуйста, выберите хотя бы один компонент для отображения";
+"codexcode.error_no_sessionkey" = "Ключ сеанса не настроен. Сначала установите его на вкладке «Личное использование».";
+"codexcode.success_applied" = "Конфигурация применена! Перезапустите интерфейс командной строки Codex, чтобы увидеть изменения.";
+"codexcode.success_disabled" = "Статусная строка отключена. Перезапустите интерфейс командной строки Кодекса.";
+"codexcode.preview_no_components" = "Компоненты не выбраны";
+
+/* ==================== */
+/* MARK: - API Billing (Additional) */
+/* ==================== */
+"api.title" = "Биллинг API";
+"api.subtitle" = "Мониторинг использования и расходов API";
+"api.enable_billing_tracking" = "Включить отслеживание выставления счетов через API";
+"api.enable_billing_description" = "Отслеживайте использование API, текущие расходы и оставшиеся предоплаченные кредиты.";
+"api.label_api_session_key" = "Сеансовый ключ API";
+"api.placeholder_api_session_key" = "sk-ant-api03-...";
+"api.help_api_session_key" = "Ваш сеансовый ключ с console.anthropic.com.";
+"api.button_fetch_organizations" = "Выбор организаций";
+"api.button_fetching" = "Загрузка...";
+"api.button_save_configuration" = "Сохранить конфигурацию";
+"api.success_organizations_found" = "Найдено %d организаций";
+"api.error_fetch_failed" = "Не удалось получить организации: %@.";
+"api.success_configuration_saved" = "Конфигурация API успешно сохранена.";
+
+/* ==================== */
+/* MARK: - Personal Usage (Additional) */
+/* ==================== */
+"personal.title" = "Личное использование";
+"personal.subtitle" = "Отслеживайте использование и сеансы Codex.ai";
+"personal.label_session_key" = "Сеансовый ключ";
+"personal.placeholder_session_key" = "ск-ант-сид-...";
+"personal.help_session_key" = "Вставьте файл cookie sessionKey из codex.ai DevTools.";
+"personal.button_test_connection" = "Тестовое соединение";
+"personal.button_save_and_continue" = "Сохранить и продолжить";
+"personal.button_remove_key" = "Удалить ключ";
+"personal.success_connected" = "Успешно подключено к организации";
+"personal.confirm_remove_title" = "Удалить сеансовый ключ?";
+"personal.confirm_remove_message" = "Это прекратит отслеживание вашего личного использования.";
+
+/* ==================== */
+/* MARK: - Error Presenter */
+/* ==================== */
+"error.code_label" = "Код ошибки:";
+"error.what_to_do" = "Что делать:";
+"error.occurred_at" = "Произошло: %@";
+
+/* ==================== */
+/* MARK: - General Settings (Additional) */
+/* ==================== */
+"general.slider_realtime" = "Обновления в реальном времени";
+"general.slider_frequent" = "Частые обновления";
+"general.slider_balanced" = "Сбалансированный режим";
+"general.slider_efficient" = "Энергоэффективный";
+"general.slider_battery_saver" = "Экономия заряда батареи";
+"general.slider_fast" = "Быстрый";
+"general.slider_balanced_label" = "Сбалансированный";
+"general.slider_battery_saver_label" = "Экономия заряда батареи";
+"general.available_languages" = "Доступные языки (%d)";
+
+/* ==================== */
+/* MARK: - Badges */
+/* ==================== */
+"badge.new" = "НОВЫЙ";
+"badge.beta" = "БЕТА";
+"badge.pro" = "ПРО";
+
+/* ==================== */
+/* MARK: - Appearance (Additional) */
+/* ==================== */
+"appearance.title" = "Внешний вид строки меню";
+"appearance.subtitle" = "Настройте значки и показатели строки меню";
+"appearance.global_settings" = "Глобальные настройки";
+"appearance.menu_bar_metrics" = "Показатели строки меню";
+"appearance.monochrome_title" = "Монохромный";
+"appearance.monochrome_description" = "Используйте адаптивный цвет вместо цветов статуса (зеленый/синий/красный).";
+"appearance.show_labels_title" = "Показать метки значков";
+"appearance.show_labels_description" = "Отображать метки префиксов (S:, W:, API:) для каждой метрики.";
+"appearance.show_remaining_title" = "Показать оставшийся процент";
+"appearance.show_remaining_description" = "Отображение оставшейся емкости вместо использованного процента (например, батареи macOS)";
+"appearance.multiprofile_locked_title" = "Настройки внешнего вида заблокированы";
+"appearance.multiprofile_locked_description" = "Эти настройки отключены, пока активно многопрофильное отображение. Каждый профиль использует свой собственный внешний вид в многопрофильном режиме.";
+"appearance.disable_multiprofile" = "Отключить многопрофильное отображение";
+
+/* ==================== */
+/* MARK: - Setup Wizard (Additional) */
+/* ==================== */
+"setup.step_number_1" = "1";
+"setup.step_number_2" = "2";
+"setup.step_title_get_key" = "Получите сеансовый ключ";
+"setup.step_title_enter_key" = "Введите свой сеансовый ключ";
+"setup.step_description_get_key" = "Вам нужно будет извлечь сеансовый ключ из codex.ai.";
+"setup.button_open_codex" = "Открыть codex.ai";
+"setup.paste_instruction" = "Вставьте скопированное значение sessionKey.";
+
+/* ==================== */
+/* MARK: - Component Preview */
+/* ==================== */
+"preview.sample_text_codex" = "Кодекс";
+"preview.sample_percentage" = "60%";
+"preview.sample_card_content" = "Содержимое карты находится здесь";
+"preview.sample_more_content" = "Больше контента";
+"preview.sample_update_every" = "Обновляйте каждые:";
+"preview.sample_5_minutes" = "5 минут";
+
+/* ==================== */
+/* MARK: - Manage Profiles */
+/* ==================== */
+"profiles.title" = "Управление профилями";
+"profiles.subtitle" = "Создание и управление несколькими учетными записями Кодекса";
+"profiles.create_new" = "Создать новый профиль";
+"profiles.about_title" = "О профилях";
+"profiles.about_description" = "Каждый профиль имеет свои:";
+"profiles.about_credentials" = "Учетные данные Codex.ai";
+"profiles.about_api" = "Учетные данные консоли API";
+"profiles.about_cli" = "Синхронизация учетной записи CLI";
+"profiles.about_appearance" = "Внешний вид строки меню";
+"profiles.about_notifications" = "Настройки уведомлений";
+"profiles.about_refresh" = "Интервал обновления";
+"profiles.active_badge" = "Активный";
+"profiles.created" = "Созданный";
+"profiles.cli_synced" = "Интерфейс командной строки синхронизирован";
+"profiles.rename" = "Переименовать профиль";
+"profiles.activate" = "Активировать профиль";
+"profiles.delete" = "Удалить профиль";
+"profiles.delete_title" = "Удалить профиль";
+"profiles.delete_confirm" = "Вы уверены, что хотите удалить «%@»? Это приведет к удалению всех связанных учетных данных и настроек.";
+"profiles.create_title" = "Создать новый профиль";
+"profiles.name_label" = "Имя профиля (необязательно)";
+"profiles.name_placeholder" = "Оставьте пустым для случайного имени";
+"profiles.name_hint" = "Если оставить пустым, будет сгенерировано забавное случайное имя!";
+
+/* ==================== */
+/* MARK: - Multi-Profile Display */
+/* ==================== */
+"multiprofile.title" = "Многопрофильный дисплей";
+"multiprofile.subtitle" = "Показать несколько профилей в строке меню";
+"multiprofile.enable_title" = "Показать несколько профилей";
+"multiprofile.enable_description" = "Отображать выбранные профили в виде компактных значков рядом друг с другом.";
+"multiprofile.select_profiles" = "Выберите профили для отображения:";
+"multiprofile.info" = "Каждый профиль показывает использование с цветом, обозначающим статус (зеленый/синий/красный).";
+"multiprofile.active_badge" = "Активный";
+"multiprofile.at_least_one" = "Должен быть выбран хотя бы один профиль";
+"multiprofile.icon_style" = "Стиль значка";
+"multiprofile.show_week" = "Показать использование за неделю";
+"multiprofile.show_week_description" = "Отображение еженедельного использования в дополнение к сеансу";
+"multiprofile.show_label" = "Показать метку профиля";
+"multiprofile.show_label_description" = "Отображать имя профиля под значком";
+"multiprofile.use_system_color" = "Монохромный";
+"multiprofile.use_system_color_description" = "Используйте белый цвет вместо цветов статуса (зеленый/синий/красный).";
+
+/* ==================== */
+/* MARK: - General Settings (Profile-Level) */
+/* ==================== */
+"general.title" = "Общий";
+"general.subtitle" = "Интервал обновления и уведомления";
+"general.refresh_title" = "Интервал обновления";
+"general.refresh_subtitle" = "Как часто проверять обновления использования";
+"general.refresh_seconds" = "%d секунд";
+"general.refresh_min" = "10 с";
+"general.refresh_max" = "300 с";
+"general.autostart_title" = "Автозапуск сеанса";
+"general.autostart_subtitle" = "Автоматически запускать новый сеанс при необходимости";
+"general.autostart_toggle" = "Автоматический запуск нового сеанса";
+"general.autostart_description" = "Автоматически отправлять сообщение при сбросе сеанса";
+"general.autostart_requirement" = "• Ключ сеанса настраивается на вкладке «Учетные данные» → Codex.ai.";
+"general.notifications_title" = "Уведомления";
+"general.notifications_subtitle" = "Получайте уведомления об этапах использования";
+"general.connected" = "Подключено";
+"general.not_connected" = "Не подключен";
+
+/* ==================== */
+/* MARK: - Updates Settings */
+/* ==================== */
+"updates.version_info" = "Информация о версии";
+"updates.update_preferences" = "Обновить настройки";
+"updates.version_label" = "v%@ (%@)";
+
+/* ==================== */
+/* MARK: - Appearance (Additional) */
+/* ==================== */
+"appearance.global_subtitle" = "Настроить поведение значков в строке меню";
+"appearance.metrics_subtitle" = "Выберите, какие показатели отображать в строке меню";
+"appearance.all_metrics_off_title" = "Режим логотипа приложения";
+"appearance.all_metrics_off_description" = "Все показатели отключены. Вместо этого логотип приложения будет отображаться в строке меню. Нажмите на нее, чтобы получить доступ к профилям и настройкам.";
+
+/* ==================== */
+/* MARK: - Metric Card */
+/* ==================== */
+"metric.show_countdown" = "Показать время до следующего сеанса";
+"metric.countdown_description" = "Отображение оставшегося времени (например, →2ч) на значке";
+
+/* ==================== */
+/* MARK: - Personal Usage (Additional) */
+/* ==================== */
+"personal.configuration_title" = "Конфигурация";
+"personal.status_connected" = "Подключено";
+"personal.status_not_connected" = "Не подключен";
+
+/* ==================== */
+/* MARK: - Language Settings */
+/* ==================== */
+"language.title" = "Язык";
+"language.subtitle" = "Выберите предпочитаемый язык";
+"language.select_language" = "Выберите язык";
+"language.available" = "Доступные языки";
+"language.restart_required" = "Требуется перезагрузка";
+"language.restart_message" = "Чтобы изменения языка вступили в силу, необходимо перезапустить приложение.";
+"language.restart_now" = "Перезагрузить сейчас";
+"language.restart_later" = "Позже";
+
+/* ==================== */
+/* MARK: - Common Actions (Additional) */
+/* ==================== */
+"common.create" = "Создавать";
+"common.rename" = "Переименовать";
+"common.activate" = "Активировать";
+"common.connected" = "Подключено";
+"common.not_connected" = "Не подключен";
+"common.back" = "Назад";
+"common.next" = "Следующий";
+"common.remove" = "Удалять";
+"common.switch" = "Выключатель";
+
+/* ==================== */
+/* MARK: - Popover/Menu Bar */
+/* ==================== */
+"popover.manage_profiles" = "Управление профилями";
+"popover.no_profile" = "Нет профиля";
+"popover.profiles_count" = "%d профили";
+"popover.profile_count_singular" = "1 профиль";
+
+/* ==================== */
+/* MARK: - Setup Wizard */
+/* ==================== */
+"setup.step.enter_session_key" = "Введите ключ";
+"wizard.test_connection" = "Тестовое соединение";
+"wizard.select_org_title" = "Какую организацию вы хотите отслеживать?";
+"wizard.select_org_subtitle" = "Выберите организацию Кодекса для мониторинга использования";
+"wizard.config_summary" = "Сводная информация о конфигурации";
+"wizard.session_key" = "Сеансовый ключ";
+"wizard.api_session_key" = "Сеансовый ключ API";
+"wizard.organization" = "Организация";
+"wizard.organization_id" = "Идентификатор: %@";
+"wizard.select_organization" = "Выберите организацию";
+"wizard.choose_organization" = "Выберите, какую организацию отслеживать";
+"wizard.review_config" = "Просмотр конфигурации";
+"wizard.confirm_settings" = "Подтвердите настройки перед сохранением";
+"wizard.key_will_update" = "Ключ сеанса будет обновлен.";
+"wizard.api_key_will_update" = "Ключ сеанса API будет обновлен.";
+
+/* ==================== */
+/* MARK: - CLI Account */
+/* ==================== */
+"cli.access_token" = "Токен доступа";
+"cli.subscription" = "Подписка";
+"cli.scopes" = "Области применения";
+"cli.sync_instructions" = "Нажмите «Синхронизировать из кода Кодекса» ниже, чтобы импортировать свои учетные данные.";
+"cli.about_title" = "О синхронизации учетной записи CLI";
+"cli.benefits" = "Преимущества:";
+"cli.tracking_note" = "Примечание. Для отслеживания использования используются учетные данные Codex.ai. Учетные данные CLI предназначены только для переключения учетных записей.";
+
+/* ==================== */
+/* MARK: - Settings Sections (Titles & Descriptions) */
+/* ==================== */
+"section.credentials" = "РЕКВИЗИТЫ ДЛЯ ВХОДА";
+"section.active_profile" = "Активный профиль";
+"section.settings" = "НАСТРОЙКИ";
+"section.app" = "ПРИЛОЖЕНИЕ";
+
+"section.codexai_title" = "Кодекс.ай";
+"section.codexai_desc" = "Учетные данные Codex.ai";
+"section.api_console_title" = "API-консоль";
+"section.api_console_desc" = "Учетные данные консоли API";
+"section.cli_account_title" = "Учетная запись CLI";
+"section.cli_account_desc" = "Синхронизация учетной записи CLI";
+"section.appearance_title" = "Появление";
+"section.appearance_desc" = "Внешний вид строки меню";
+"section.general_title" = "Общий";
+"section.general_desc" = "Общие настройки";
+"section.manage_profiles_title" = "Управление профилями";
+"section.manage_profiles_desc" = "Управление профилями";
+
+/* ==================== */
+/* MARK: - Creator Info */
+/* ==================== */
+"creator.name" = "Хамед Эльфайоме";
+"creator.username" = "@hamed-elfayome";
+
+/* ==================== */
+/* MARK: - Wizard Steps & Actions */
+/* ==================== */
+"wizard.enter_key" = "Введите ключ";
+"wizard.select_org" = "Выберите организацию";
+"wizard.confirm" = "Подтверждать";
+"wizard.testing" = "Тестирование...";
+"wizard.test_connection" = "Тестовое соединение";
+"wizard.fetching" = "Загрузка...";
+"wizard.fetch_organizations" = "Выбор организаций";
+"wizard.saving" = "Сохранение...";
+"wizard.save_configuration" = "Сохранить конфигурацию";
+
+/* ==================== */
+/* MARK: - CLI Account Sync */
+/* ==================== */
+"cli.title" = "Учетная запись CLI";
+"cli.subtitle" = "Синхронизируйте свою учетную запись с кодом Кодекса";
+"cli.synced" = "Учетная запись CLI синхронизирована";
+"cli.not_synced" = "Не синхронизировано";
+"cli.account_details" = "Детали учетной записи";
+"cli.credentials_synced" = "Ваши синхронизированные учетные данные CLI";
+"cli.no_credentials" = "Учетные данные еще не синхронизированы";
+"cli.resync" = "Повторная синхронизация";
+"cli.sync_from_code" = "Синхронизация с кодом Кодекса";
+"cli.benefit_1" = "Автоматическое переключение входа в код Codex с профилями";
+"cli.benefit_2" = "Синхронизируйте CLI и учетные записи приложений";
+"cli.benefit_3" = "Автоматическое обновление учетных данных при переключении профиля";
+
+/* ==================== */
+/* MARK: - Additional Keys */
+/* ==================== */
+"api.single_organization" = "Одна организация найдена и выбрана автоматически";
+"api.remove_title" = "Удалить учетные данные";
+"api.remove_subtitle" = "Навсегда удалите ключ сеанса консоли API из этого профиля.";
+"codexcode.button_apply" = "Применять";
+"codexcode.button_reset" = "Перезагрузить";
+"error.generic" = "Ошибка: %@";
+"personal.button_saving" = "Сохранение...";
+"personal.button_setup_wizard" = "Мастер установки";
+"personal.button_open_codex" = "Открыть codex.ai";
+"personal.success_key_saved" = "Ключ сеанса успешно сохранен.";
+"personal.remove_title" = "Удалить учетные данные";
+"personal.remove_subtitle" = "Удалите навсегда свой сеансовый ключ Codex.ai из этого профиля.";
+"about.run_setup_wizard" = "Запустите мастер установки";
+
+/* ==================== */
+/* MARK: - Migration & Reset */
+/* ==================== */
+"wizard.migrate_old_data" = "Есть старые данные приложения?";
+"wizard.migrate_description" = "Если у вас была установлена ​​предыдущая версия, нажмите ниже, чтобы импортировать старые профили и настройки. Это запросит системное разрешение на доступ к данным.";
+"wizard.migrate_button" = "Мигрировать";
+"wizard.migration_success" = "✅ Успешно перенесены элементы %d.";
+"wizard.migration_failed" = "⚠️ Не удалось выполнить миграцию: %@.";
+"about.reset_app_data" = "Сбросить данные приложения";
+"about.reset_confirmation_title" = "Сбросить все данные приложения?";
+"about.reset_confirm" = "Перезагрузить";
+"about.reset_confirmation_message" = "Это приведет к безвозвратному удалению всех профилей, учетных данных и настроек. Приложение закроется, и вам нужно будет выполнить настройку заново. Это невозможно отменить.";
+"wizard.skip_migration" = "Пропускать";
+"wizard.migration_skipped" = "Миграция пропущена. При необходимости вы можете вручную синхронизировать старые данные позже.";
+
+/* Codex Code Info */
+"wizard.codex_code_info_title" = "Используете код Кодекса?";
+"wizard.codex_code_info_description" = "Отслеживание использования будет работать, но строка состояния CLI и автоматический запуск сеанса не будут работать без ключа сеанса.";
+"wizard.codex_code_skip_setup" = "Пропустить настройку";
+"wizard.migrate_description_short" = "Импортируйте данные своих старых профилей из предыдущей версии приложения.";
+"wizard.skip_migration" = "Пропускать";
+"wizard.migration_skipped" = "Пропущено";

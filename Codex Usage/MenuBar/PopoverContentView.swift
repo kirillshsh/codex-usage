@@ -63,16 +63,18 @@ struct SmartHeader: View {
     @StateObject private var profileManager = ProfileManager.shared
     @State private var accountMessage: String?
     @State private var accountMessageColor: Color = .secondary
+    @State private var usagePreviews: [UUID: CodexCLIAccountUsagePreview] = [:]
+    @State private var isLoadingUsagePreviews = false
 
-    private var currentAccountEmail: String {
+    private var currentAccountLabel: String {
+        if let label = cliSyncService.activeAccountDisplayName,
+           !label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return label
+        }
+
         if let email = cliSyncService.activeAccountEmail,
            !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return email
-        }
-
-        if let fallback = profileManager.activeProfile?.name,
-           !fallback.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return fallback
         }
 
         return "не авторизован"
@@ -89,11 +91,12 @@ struct SmartHeader: View {
                             Button {
                                 switchToAccount(account)
                             } label: {
-                                if account.email.caseInsensitiveCompare(currentAccountEmail) == .orderedSame {
-                                    Label(account.email, systemImage: "checkmark")
-                                } else {
-                                    Text(account.email)
-                                }
+                                AccountSwitcherRow(
+                                    title: cliSyncService.displayName(for: account),
+                                    isActive: account.id == cliSyncService.activeAccountId,
+                                    usagePreview: usagePreviews[account.id],
+                                    isLoading: isLoadingUsagePreviews
+                                )
                             }
                         }
                     }
@@ -109,7 +112,7 @@ struct SmartHeader: View {
                     }
 
                     Button("обновить список аккаунтов") {
-                        cliSyncService.refreshSavedAccounts()
+                        refreshAccountsAndPreviews()
                     }
                 } label: {
                     HStack(spacing: 6) {
@@ -117,7 +120,7 @@ struct SmartHeader: View {
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundColor(.blue)
 
-                        Text(currentAccountEmail)
+                        Text(currentAccountLabel)
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.primary)
                             .lineLimit(1)
@@ -186,7 +189,12 @@ struct SmartHeader: View {
                 .fill(Color(nsColor: .controlBackgroundColor).opacity(0.4))
         )
         .onAppear {
-            cliSyncService.refreshSavedAccounts()
+            refreshAccountsAndPreviews()
+        }
+        .onChange(of: cliSyncService.savedAccounts) {
+            Task {
+                await loadUsagePreviews()
+            }
         }
     }
 
@@ -197,8 +205,11 @@ struct SmartHeader: View {
                 email: selected.email,
                 credentialsJSON: selected.authJSON
             )
-            showAccountMessage("активный аккаунт: \(selected.email)", color: .green)
+            showAccountMessage("активный аккаунт: \(cliSyncService.displayName(for: selected))", color: .green)
             NotificationCenter.default.post(name: .credentialsChanged, object: nil)
+            Task {
+                await loadUsagePreviews()
+            }
         } catch {
             showAccountMessage("не удалось переключить аккаунт: \(error.localizedDescription)", color: .red)
         }
@@ -211,8 +222,11 @@ struct SmartHeader: View {
                 email: imported.email,
                 credentialsJSON: imported.authJSON
             )
-            showAccountMessage("аккаунт добавлен: \(imported.email)", color: .green)
+            showAccountMessage("аккаунт добавлен: \(cliSyncService.displayName(for: imported))", color: .green)
             NotificationCenter.default.post(name: .credentialsChanged, object: nil)
+            Task {
+                await loadUsagePreviews()
+            }
         } catch {
             showAccountMessage("не удалось импортировать аккаунт: \(error.localizedDescription)", color: .red)
         }
@@ -233,6 +247,138 @@ struct SmartHeader: View {
     private func showAccountMessage(_ message: String, color: Color) {
         accountMessage = message
         accountMessageColor = color
+    }
+
+    private func refreshAccountsAndPreviews() {
+        cliSyncService.refreshSavedAccounts()
+        Task {
+            await loadUsagePreviews()
+        }
+    }
+
+    @MainActor
+    private func loadUsagePreviews() async {
+        let accounts = cliSyncService.savedAccounts
+        guard !accounts.isEmpty else {
+            usagePreviews = [:]
+            isLoadingUsagePreviews = false
+            return
+        }
+
+        isLoadingUsagePreviews = true
+
+        var previews: [UUID: CodexCLIAccountUsagePreview] = [:]
+        for account in accounts {
+            if let preview = await cliSyncService.fetchUsagePreview(for: account) {
+                previews[account.id] = preview
+            }
+        }
+
+        usagePreviews = previews
+        isLoadingUsagePreviews = false
+    }
+}
+
+private struct AccountSwitcherRow: View {
+    let title: String
+    let isActive: Bool
+    let usagePreview: CodexCLIAccountUsagePreview?
+    let isLoading: Bool
+
+    private var previewColor: Color {
+        guard let usagePreview else {
+            return .secondary.opacity(0.5)
+        }
+
+        switch usagePreview.combinedRemainingPercent {
+        case 20...:
+            return .green
+        case 10..<20:
+            return .blue
+        default:
+            return .red
+        }
+    }
+
+    private var combinedPercentText: String {
+        guard let usagePreview else {
+            return "--%"
+        }
+        return "\(Int(usagePreview.combinedRemainingPercent.rounded()))%"
+    }
+
+    private var detailedPercentText: String {
+        guard let usagePreview else {
+            return isLoading ? "обновляю лимит…" : "лимит недоступен"
+        }
+
+        let session = Int(usagePreview.sessionRemainingPercent.rounded())
+        let weekly = Int(usagePreview.weeklyRemainingPercent.rounded())
+        return "5ч \(session)% • 7д \(weekly)%"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(isActive ? .blue : .secondary.opacity(0.45))
+
+                Text(title)
+                    .font(.system(size: 11, weight: isActive ? .semibold : .regular))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+
+            HStack(spacing: 6) {
+                AccountLimitPreviewBar(
+                    progress: usagePreview?.combinedRemainingPercent ?? 0,
+                    color: previewColor
+                )
+
+                Text(combinedPercentText)
+                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                    .foregroundColor(previewColor)
+
+                Text(detailedPercentText)
+                    .font(.system(size: 9, weight: .regular, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.85))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 2)
+    }
+}
+
+private struct AccountLimitPreviewBar: View {
+    let progress: Double
+    let color: Color
+
+    private var normalizedProgress: Double {
+        min(max(progress, 0), 100)
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.secondary.opacity(0.18))
+
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.75), color],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: geometry.size.width * (normalizedProgress / 100.0))
+            }
+        }
+        .frame(width: 74, height: 6)
+        .accessibilityLabel("остаток лимита")
+        .accessibilityValue("\(Int(normalizedProgress.rounded())) процентов")
     }
 }
 
@@ -261,7 +407,7 @@ struct SmartUsageDashboard: View {
             // Secondary Usage Cards
             HStack(spacing: 12) {
                 SmartUsageCard(
-                    title: "menubar.all_models".localized,
+                    title: "menubar.weekly".localized,
                     subtitle: "menubar.weekly".localized,
                     usedPercentage: usage.weeklyPercentage,
                     showRemaining: showRemainingPercentage,

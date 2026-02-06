@@ -1,5 +1,11 @@
 # Codex Usage Tracker
 
+> Attribution:
+> - **Original project creator (upstream):** [Hamed Elfayome](https://github.com/hamed-elfayome)
+> - **Codex CLI adaptation, redesign, and ongoing fork maintenance:** [Kirill (kirillshsh)](https://github.com/kirillshsh)
+>
+> This repository is a fork/remix of the original project and preserves upstream credits.
+>
 > Fork note (Codex CLI adaptation): this fork adds a local Codex CLI usage backend and menu bar integration via `~/.codex/usage_tracker/latest_snapshot.json`.
 >
 > Quick setup on macOS:

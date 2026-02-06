@@ -46,6 +46,9 @@ class LanguageManager: ObservableObject {
     /// Supported languages (LTR only for simplicity)
     enum SupportedLanguage: String, CaseIterable, Identifiable {
         case english = "en"
+        case russian = "ru"
+        case ukrainian = "uk"
+        case belarusian = "be"
         case spanish = "es"
         case french = "fr"
         case german = "de"
@@ -63,6 +66,9 @@ class LanguageManager: ObservableObject {
         var displayName: String {
             switch self {
             case .english: return "English"
+            case .russian: return "Русский"
+            case .ukrainian: return "Українська"
+            case .belarusian: return "Беларуская"
             case .spanish: return "Español"
             case .french: return "Français"
             case .german: return "Deutsch"
@@ -77,6 +83,9 @@ class LanguageManager: ObservableObject {
         var englishName: String {
             switch self {
             case .english: return "English"
+            case .russian: return "Russian"
+            case .ukrainian: return "Ukrainian"
+            case .belarusian: return "Belarusian"
             case .spanish: return "Spanish"
             case .french: return "French"
             case .german: return "German"
@@ -91,6 +100,9 @@ class LanguageManager: ObservableObject {
         var flag: String {
             switch self {
             case .english: return "🇬🇧"
+            case .russian: return "🇷🇺"
+            case .ukrainian: return "🇺🇦"
+            case .belarusian: return "🇧🇾"
             case .spanish: return "🇪🇸"
             case .french: return "🇫🇷"
             case .german: return "🇩🇪"
