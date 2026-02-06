@@ -10,11 +10,6 @@ class MenuBarManager: NSObject, ObservableObject {
     @Published private(set) var apiUsage: APIUsage?
     @Published private(set) var isRefreshing: Bool = false
 
-    // Multi-profile mode: track which profile's icon was clicked
-    @Published private(set) var clickedProfileId: UUID?
-    @Published private(set) var clickedProfileUsage: CodexUsage?
-    @Published private(set) var clickedProfileAPIUsage: APIUsage?
-
     // Track when refresh was last triggered (for distinguishing user vs auto refresh)
     private var lastRefreshTriggerTime: Date = .distantPast
 
@@ -82,33 +77,26 @@ class MenuBarManager: NSObject, ObservableObject {
         statusBarUIManager = StatusBarUIManager()
         statusBarUIManager?.delegate = self
 
-        // Check if we should use multi-profile mode
-        if profileManager.displayMode == .multi {
-            // Multi-profile mode - setup with selected profiles
-            setupMultiProfileMode()
+        // Profile system is disabled: always use single-profile mode.
+        let config = profileManager.activeProfile?.iconConfig ?? .default
+        let hasUsageCredentials = profileManager.activeProfile?.hasUsageCredentials ?? false
+
+        let displayConfig: MenuBarIconConfiguration
+        if !hasUsageCredentials {
+            displayConfig = MenuBarIconConfiguration(
+                monochromeMode: config.monochromeMode,
+                showIconNames: config.showIconNames,
+                metrics: config.metrics.map { metric in
+                    var updatedMetric = metric
+                    updatedMetric.isEnabled = false
+                    return updatedMetric
+                }
+            )
         } else {
-            // Single profile mode - setup with active profile's config
-            let config = profileManager.activeProfile?.iconConfig ?? .default
-            let hasUsageCredentials = profileManager.activeProfile?.hasUsageCredentials ?? false
-
-            // If no usage credentials, create empty config to show default logo
-            let displayConfig: MenuBarIconConfiguration
-            if !hasUsageCredentials {
-                displayConfig = MenuBarIconConfiguration(
-                    monochromeMode: config.monochromeMode,
-                    showIconNames: config.showIconNames,
-                    metrics: config.metrics.map { metric in
-                        var updatedMetric = metric
-                        updatedMetric.isEnabled = false
-                        return updatedMetric
-                    }
-                )
-            } else {
-                displayConfig = config
-            }
-
-            statusBarUIManager?.setup(target: self, action: #selector(togglePopover), config: displayConfig)
+            displayConfig = config
         }
+
+        statusBarUIManager?.setup(target: self, action: #selector(togglePopover), config: displayConfig)
 
         // Setup popover
         setupPopover()
@@ -175,8 +163,6 @@ class MenuBarManager: NSObject, ObservableObject {
         // Observe session key updates
         observeCredentialChanges()
 
-        // Observe display mode changes (single/multi profile)
-        observeDisplayModeChanges()
     }
 
     func cleanup() {
@@ -406,22 +392,6 @@ class MenuBarManager: NSObject, ObservableObject {
 
         guard let button = clickedButton else { return }
 
-        // In multi-profile mode, determine which profile was clicked
-        if statusBarUIManager?.isInMultiProfileMode == true,
-           let profileId = statusBarUIManager?.profileId(for: button),
-           let profile = profileManager.profiles.first(where: { $0.id == profileId }) {
-            // Set the clicked profile data
-            clickedProfileId = profileId
-            clickedProfileUsage = profile.codexUsage ?? .empty
-            clickedProfileAPIUsage = profile.apiUsage
-            LoggingService.shared.log("Multi-profile popover: showing data for '\(profile.name)'")
-        } else {
-            // Single profile mode - use active profile
-            clickedProfileId = profileManager.activeProfile?.id
-            clickedProfileUsage = nil  // Will use manager.usage
-            clickedProfileAPIUsage = nil  // Will use manager.apiUsage
-        }
-
         // If there's a detached window, close it
         if let window = detachedWindow {
             window.close()
@@ -498,21 +468,10 @@ class MenuBarManager: NSObject, ObservableObject {
 
     /// Updates all enabled status bar icons
     private func updateAllStatusBarIcons() {
-        // Check if in multi-profile mode
-        if profileManager.displayMode == .multi {
-            // Update multi-profile icons using profiles from profileManager
-            let config = profileManager.multiProfileConfig
-            statusBarUIManager?.updateMultiProfileButtons(
-                profiles: profileManager.profiles,
-                config: config
-            )
-        } else {
-            // Single profile mode - use the standard update
-            statusBarUIManager?.updateAllButtons(
-                usage: usage,
-                apiUsage: apiUsage
-            )
-        }
+        statusBarUIManager?.updateAllButtons(
+            usage: usage,
+            apiUsage: apiUsage
+        )
     }
 
     /// Updates a specific metric's status bar icon
@@ -639,15 +598,8 @@ class MenuBarManager: NSObject, ObservableObject {
 
             // Reload configuration from active profile (already on main queue)
             Task { @MainActor in
-                // Handle differently based on display mode
-                if self.profileManager.displayMode == .multi {
-                    // Multi-profile mode - refresh all profile icons
-                    self.setupMultiProfileMode()
-                } else {
-                    // Single profile mode
-                    let newConfig = self.profileManager.activeProfile?.iconConfig ?? .default
-                    self.updateMenuBarDisplay(with: newConfig)
-                }
+                let newConfig = self.profileManager.activeProfile?.iconConfig ?? .default
+                self.updateMenuBarDisplay(with: newConfig)
             }
         }
     }
@@ -794,12 +746,6 @@ class MenuBarManager: NSObject, ObservableObject {
     }
 
     func refreshUsage() {
-        // In multi-profile mode, refresh ALL selected profiles
-        if profileManager.displayMode == .multi {
-            refreshAllSelectedProfiles()
-            return
-        }
-
         // Single profile mode - refresh only active profile
         guard let profile = profileManager.activeProfile else {
             LoggingService.shared.log("MenuBarManager.refreshUsage: No active profile")

@@ -9,19 +9,14 @@ struct PopoverContentView: View {
 
     @State private var isRefreshing = false
     @State private var showInsights = false
-    @StateObject private var profileManager = ProfileManager.shared
 
-    // Computed properties for multi-profile mode support
     private var displayUsage: CodexUsage {
-        // In multi-profile mode, use the clicked profile's usage
-        manager.clickedProfileUsage ?? manager.usage
+        manager.usage
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Smart Header with Status and Profile Switcher
             SmartHeader(
-                usage: displayUsage,
                 isRefreshing: isRefreshing,
                 onRefresh: {
                     withAnimation(.easeInOut(duration: 0.3)) {
@@ -33,15 +28,11 @@ struct PopoverContentView: View {
                             isRefreshing = false
                         }
                     }
-                },
-                onManageProfiles: onPreferences,
-                clickedProfileId: manager.clickedProfileId
+                }
             )
 
-            // Intelligent Usage Dashboard
             SmartUsageDashboard(usage: displayUsage)
 
-            // Contextual Insights
             if showInsights {
                 ContextualInsights(usage: displayUsage)
                     .transition(.asymmetric(
@@ -50,7 +41,6 @@ struct PopoverContentView: View {
                     ))
             }
 
-            // Smart Footer with Actions
             SmartFooter(
                 usage: displayUsage,
                 showInsights: $showInsights,
@@ -63,288 +53,16 @@ struct PopoverContentView: View {
     }
 }
 
-// MARK: - Profile Switcher Compact (for header)
-
-struct ProfileSwitcherCompact: View {
-    @StateObject private var profileManager = ProfileManager.shared
-    @State private var isHovered = false
-    let onManageProfiles: () -> Void
-
-    var body: some View {
-        Menu {
-            ForEach(profileManager.profiles) { profile in
-                Button(action: {
-                    Task {
-                        await profileManager.activateProfile(profile.id)
-                    }
-                }) {
-                    HStack(spacing: 8) {
-                        // Profile icon
-                        Image(systemName: "person.circle.fill")
-                            .font(.system(size: 12))
-
-                        // Profile name
-                        Text(profile.name)
-                            .font(.system(size: 12, weight: .medium))
-
-                        Spacer()
-
-                        // Active indicator
-                        if profile.id == profileManager.activeProfile?.id {
-                            Image(systemName: "circle.fill")
-                                .font(.system(size: 6))
-                                .foregroundColor(.accentColor)
-                        }
-                    }
-                }
-            }
-
-            Divider()
-
-            Button(action: onManageProfiles) {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 12))
-                    Text("popover.manage_profiles".localized)
-                        .font(.system(size: 12, weight: .medium))
-                }
-            }
-        } label: {
-            HStack(spacing: 5) {
-                Text(profileManager.activeProfile?.name ?? "popover.no_profile".localized)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-            }
-            .padding(.horizontal, 7)
-            .padding(.vertical, 3)
-            .background(
-                Capsule()
-                    .fill(isHovered ? Color.accentColor.opacity(0.1) : Color.clear)
-            )
-        }
-        .menuStyle(.borderlessButton)
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isHovered = hovering
-            }
-        }
-    }
-}
-
-// MARK: - Profile Switcher Bar
-
-struct ProfileSwitcherBar: View {
-    @StateObject private var profileManager = ProfileManager.shared
-    @State private var isHovered = false
-    let onManageProfiles: () -> Void
-
-    var body: some View {
-        Menu {
-            ForEach(profileManager.profiles) { profile in
-                Button(action: {
-                    Task {
-                        await profileManager.activateProfile(profile.id)
-                    }
-                }) {
-                    HStack(spacing: 8) {
-                        // Profile icon
-                        Image(systemName: "person.circle.fill")
-                            .font(.system(size: 12))
-
-                        // Profile name
-                        Text(profile.name)
-                            .font(.system(size: 12, weight: .medium))
-
-                        Spacer()
-
-                        // Active indicator
-                        if profile.id == profileManager.activeProfile?.id {
-                            Image(systemName: "circle.fill")
-                                .font(.system(size: 6))
-                                .foregroundColor(.accentColor)
-                        }
-                    }
-                }
-            }
-
-            Divider()
-
-            Button(action: onManageProfiles) {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 12))
-                    Text("popover.manage_profiles".localized)
-                        .font(.system(size: 12, weight: .medium))
-                }
-            }
-        } label: {
-            HStack(spacing: 10) {
-                // Profile avatar with gradient background
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.accentColor.opacity(0.8), Color.accentColor],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 32, height: 32)
-
-                    Text(profileInitials)
-                        .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white)
-                }
-
-                // Profile info
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 4) {
-                        Text(profileManager.activeProfile?.name ?? "popover.no_profile".localized)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                    }
-
-                    HStack(spacing: 4) {
-                        if profileManager.profiles.count > 1 {
-                            Text(String(format: "popover.profiles_count".localized, profileManager.profiles.count))
-                                .font(.system(size: 9, weight: .medium))
-                                .foregroundColor(.secondary)
-                        } else {
-                            Text("popover.profile_count_singular".localized)
-                                .font(.system(size: 9, weight: .medium))
-                                .foregroundColor(.secondary)
-                        }
-
-                        Text("•")
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(.secondary.opacity(0.5))
-
-                        Text("common.switch".localized)
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(.secondary)
-                    }
-                }
-
-                Spacer()
-
-                // Chevron indicator
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(.secondary.opacity(0.6))
-                    .rotationEffect(.degrees(isHovered ? 180 : 0))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(
-                        isHovered
-                        ? Color.accentColor.opacity(0.08)
-                        : Color(nsColor: .controlBackgroundColor).opacity(0.5)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(
-                                isHovered
-                                ? Color.accentColor.opacity(0.3)
-                                : Color.secondary.opacity(0.1),
-                                lineWidth: 1
-                            )
-                    )
-            )
-        }
-        .menuStyle(.borderlessButton)
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isHovered = hovering
-            }
-        }
-    }
-
-    private var profileInitials: String {
-        guard let name = profileManager.activeProfile?.name else { return "?" }
-        let words = name.split(separator: " ")
-        if words.count >= 2 {
-            return String(words[0].prefix(1) + words[1].prefix(1)).uppercased()
-        } else if let first = words.first {
-            return String(first.prefix(2)).uppercased()
-        }
-        return "?"
-    }
-}
-
 // MARK: - Smart Header Component
+
 struct SmartHeader: View {
-    let usage: CodexUsage
     let isRefreshing: Bool
     let onRefresh: () -> Void
-    let onManageProfiles: () -> Void
-    var clickedProfileId: UUID? = nil  // Profile ID that was clicked in multi-profile mode
-
-    @StateObject private var profileManager = ProfileManager.shared
-
-    /// Check if we're in multi-profile mode
-    private var isMultiProfileMode: Bool {
-        profileManager.displayMode == .multi
-    }
-
-    /// Get the clicked profile (for multi-profile mode)
-    private var clickedProfile: Profile? {
-        guard let id = clickedProfileId else { return nil }
-        return profileManager.profiles.first { $0.id == id }
-    }
-
-    /// Get initials from profile name
-    private func profileInitials(for name: String) -> String {
-        let words = name.split(separator: " ")
-        if words.count >= 2 {
-            return String(words[0].prefix(1) + words[1].prefix(1)).uppercased()
-        } else if let first = words.first {
-            return String(first.prefix(2)).uppercased()
-        }
-        return "?"
-    }
 
     var body: some View {
-        HStack(spacing: 12) {
-            // App Logo or Profile Initial
-            HStack(spacing: 8) {
-                if isMultiProfileMode, let profile = clickedProfile {
-                    // Show profile initial in multi-profile mode - clean, minimal style
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(nsColor: .controlBackgroundColor))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .strokeBorder(Color.secondary.opacity(0.2), lineWidth: 1)
-                            )
-                            .frame(width: 24, height: 24)
-
-                        Text(profileInitials(for: profile.name))
-                            .font(.system(size: 10, weight: .semibold, design: .rounded))
-                            .foregroundColor(.secondary)
-                    }
-                } else {
-                    // Show app logo in single-profile mode
-                    Image("HeaderLogo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 24, height: 24)
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    // Profile Switcher (always shown)
-                    ProfileSwitcherCompact(onManageProfiles: onManageProfiles)
-                }
-            }
-
+        HStack {
             Spacer()
 
-            // Smart Refresh Button
             Button(action: onRefresh) {
                 ZStack {
                     if isRefreshing {

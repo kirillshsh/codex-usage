@@ -40,59 +40,68 @@ class ProfileManager: ObservableObject {
             syncCLICredentialsToDefaultProfile(defaultProfile.id)
         }
 
-        // Codex mode default: show remaining instead of used percentages.
-        var didMigrateRemainingMode = false
-        for index in profiles.indices {
-            if profiles[index].iconConfig.showRemainingPercentage == false {
-                profiles[index].iconConfig.showRemainingPercentage = true
-                didMigrateRemainingMode = true
-            }
-        }
-        if didMigrateRemainingMode {
+        // Profile system is disabled: collapse any legacy state to one default profile.
+        guard var primaryProfile = profiles.first else {
+            let defaultProfile = createDefaultProfile()
+            profiles = [defaultProfile]
+            activeProfile = defaultProfile
             profileStore.saveProfiles(profiles)
-            LoggingService.shared.log("ProfileManager: Migrated profiles to remaining percentage display mode")
+            profileStore.saveActiveProfileId(defaultProfile.id)
+            profileStore.saveDisplayMode(.single)
+            profileStore.saveMultiProfileConfig(.default)
+            displayMode = .single
+            multiProfileConfig = .default
+            return
         }
 
-        // Load active profile
-        if let activeId = profileStore.loadActiveProfileId(),
-           let profile = profiles.first(where: { $0.id == activeId }) {
-            activeProfile = profile
-        } else {
-            activeProfile = profiles.first
-            if let first = profiles.first {
-                profileStore.saveActiveProfileId(first.id)
-            }
+        primaryProfile.name = "Main"
+        primaryProfile.isSelectedForDisplay = true
+        if primaryProfile.iconConfig.showRemainingPercentage == false {
+            primaryProfile.iconConfig.showRemainingPercentage = true
         }
 
-        displayMode = profileStore.loadDisplayMode()
-        multiProfileConfig = profileStore.loadMultiProfileConfig()
+        profiles = [primaryProfile]
+        activeProfile = primaryProfile
+        displayMode = .single
+        multiProfileConfig = .default
 
-        LoggingService.shared.log("ProfileManager: Loaded \(profiles.count) profile(s), active: \(activeProfile?.name ?? "none")")
+        profileStore.saveProfiles(profiles)
+        profileStore.saveActiveProfileId(primaryProfile.id)
+        profileStore.saveDisplayMode(.single)
+        profileStore.saveMultiProfileConfig(.default)
+
+        LoggingService.shared.log("ProfileManager: Loaded single-profile mode (profiles disabled)")
     }
 
     // MARK: - Profile Operations
 
     func createProfile(name: String? = nil, copySettingsFrom: Profile? = nil) -> Profile {
-        let usedNames = profiles.map { $0.name }
-        let profileName = name ?? FunnyNameGenerator.getRandomName(excluding: usedNames)
+        let requestedName = name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let profileName = requestedName.isEmpty ? "Main" : requestedName
 
-        let newProfile = Profile(
-            id: UUID(),
-            name: profileName,
-            hasCliAccount: false,
-            iconConfig: copySettingsFrom?.iconConfig ?? .default,
-            refreshInterval: copySettingsFrom?.refreshInterval ?? 30.0,
-            autoStartSessionEnabled: copySettingsFrom?.autoStartSessionEnabled ?? false,
-            checkOverageLimitEnabled: copySettingsFrom?.checkOverageLimitEnabled ?? true,
-            notificationSettings: copySettingsFrom?.notificationSettings ?? NotificationSettings(),
-            isSelectedForDisplay: true
-        )
+        if var existing = profiles.first {
+            existing.name = profileName
+            existing.iconConfig = copySettingsFrom?.iconConfig ?? existing.iconConfig
+            existing.refreshInterval = copySettingsFrom?.refreshInterval ?? existing.refreshInterval
+            existing.autoStartSessionEnabled = copySettingsFrom?.autoStartSessionEnabled ?? existing.autoStartSessionEnabled
+            existing.checkOverageLimitEnabled = copySettingsFrom?.checkOverageLimitEnabled ?? existing.checkOverageLimitEnabled
+            existing.notificationSettings = copySettingsFrom?.notificationSettings ?? existing.notificationSettings
+            existing.isSelectedForDisplay = true
+            profiles = [existing]
+            activeProfile = existing
+            profileStore.saveProfiles(profiles)
+            profileStore.saveActiveProfileId(existing.id)
+            LoggingService.shared.log("Profile creation ignored: profile system disabled")
+            return existing
+        }
 
-        profiles.append(newProfile)
+        let fallback = createDefaultProfile()
+        profiles = [fallback]
+        activeProfile = fallback
         profileStore.saveProfiles(profiles)
-
-        LoggingService.shared.log("Created new profile: \(newProfile.name)")
-        return newProfile
+        profileStore.saveActiveProfileId(fallback.id)
+        LoggingService.shared.log("Created fallback single profile")
+        return fallback
     }
 
     func updateProfile(_ profile: Profile) {
@@ -142,38 +151,32 @@ class ProfileManager: ObservableObject {
     }
 
     func toggleProfileSelection(_ id: UUID) {
-        // Use async to avoid "Publishing changes from within view updates" warning
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if let index = self.profiles.firstIndex(where: { $0.id == id }) {
-                self.profiles[index].isSelectedForDisplay.toggle()
-                self.profileStore.saveProfiles(self.profiles)
-            }
-        }
+        guard let profile = profiles.first else { return }
+        if profile.id != id { return }
+        if profile.isSelectedForDisplay { return }
+        var updated = profile
+        updated.isSelectedForDisplay = true
+        profiles = [updated]
+        activeProfile = updated
+        profileStore.saveProfiles(profiles)
     }
 
     func getSelectedProfiles() -> [Profile] {
-        displayMode == .single
-            ? [activeProfile].compactMap { $0 }
-            : profiles.filter { $0.isSelectedForDisplay }
+        [activeProfile].compactMap { $0 }
     }
 
     func updateDisplayMode(_ mode: ProfileDisplayMode) {
-        // Use async to avoid "Publishing changes from within view updates" warning
-        DispatchQueue.main.async { [weak self] in
-            self?.displayMode = mode
-            self?.profileStore.saveDisplayMode(mode)
-            LoggingService.shared.log("Updated display mode to: \(mode.rawValue)")
+        displayMode = .single
+        profileStore.saveDisplayMode(.single)
+        if mode != .single {
+            LoggingService.shared.log("Ignored display mode change: multi-profile mode is disabled")
         }
     }
 
     func updateMultiProfileConfig(_ config: MultiProfileDisplayConfig) {
-        // Use async to avoid "Publishing changes from within view updates" warning
-        DispatchQueue.main.async { [weak self] in
-            self?.multiProfileConfig = config
-            self?.profileStore.saveMultiProfileConfig(config)
-            LoggingService.shared.log("Updated multi-profile config: style=\(config.iconStyle.rawValue), showWeek=\(config.showWeek)")
-        }
+        multiProfileConfig = .default
+        profileStore.saveMultiProfileConfig(.default)
+        LoggingService.shared.log("Ignored multi-profile config update: profile system is disabled")
     }
 
     // MARK: - Profile Activation (Centralized)
@@ -524,7 +527,7 @@ class ProfileManager: ObservableObject {
 
     private func createDefaultProfile() -> Profile {
         Profile(
-            name: FunnyNameGenerator.getRandomName(excluding: []),
+            name: "Main",
             iconConfig: .default,
             refreshInterval: 30.0,
             autoStartSessionEnabled: false,

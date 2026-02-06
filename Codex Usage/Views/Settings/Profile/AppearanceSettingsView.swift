@@ -13,10 +13,6 @@ struct AppearanceSettingsView: View {
     @State private var configuration: MenuBarIconConfiguration = .default
     @State private var saveDebounceTimer: Timer?
 
-    private var isMultiProfileMode: Bool {
-        profileManager.displayMode == .multi
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.section) {
@@ -25,16 +21,6 @@ struct AppearanceSettingsView: View {
                     title: "appearance.title".localized,
                     subtitle: "appearance.subtitle".localized
                 )
-
-                // Multi-profile mode warning
-                if isMultiProfileMode {
-                    MultiProfileModeWarningCard(
-                        onDisableMultiProfile: {
-                            profileManager.updateDisplayMode(.single)
-                            NotificationCenter.default.post(name: .displayModeChanged, object: nil)
-                        }
-                    )
-                }
 
                 // Global Settings
                 SettingsSectionCard(
@@ -79,8 +65,6 @@ struct AppearanceSettingsView: View {
                         )
                     }
                 }
-                .disabled(isMultiProfileMode)
-                .opacity(isMultiProfileMode ? 0.5 : 1.0)
 
                 // Metrics Configuration
                 SettingsSectionCard(
@@ -143,8 +127,6 @@ struct AppearanceSettingsView: View {
 
                     }
                 }
-                .disabled(isMultiProfileMode)
-                .opacity(isMultiProfileMode ? 0.5 : 1.0)
 
                 Spacer()
             }
@@ -183,61 +165,6 @@ struct AppearanceSettingsView: View {
 
         let enabledCount = configuration.metrics.filter { $0.isEnabled }.count
         LoggingService.shared.log("Saved icon configuration to profile (enabled: \(enabledCount))")
-    }
-}
-
-// MARK: - Multi-Profile Mode Warning Card
-
-struct MultiProfileModeWarningCard: View {
-    let onDisableMultiProfile: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-            HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 16))
-                    .foregroundColor(.blue)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("appearance.multiprofile_locked_title".localized)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(.primary)
-
-                    Text("appearance.multiprofile_locked_description".localized)
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Spacer()
-            }
-
-            Button(action: onDisableMultiProfile) {
-                HStack(spacing: 6) {
-                    Image(systemName: "arrow.uturn.backward")
-                        .font(.system(size: 10))
-                    Text("appearance.disable_multiprofile".localized)
-                        .font(.system(size: 11, weight: .medium))
-                }
-                .foregroundColor(.blue)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.blue, lineWidth: 1)
-                )
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(DesignTokens.Spacing.cardPadding)
-        .background(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .fill(Color.blue.opacity(0.1))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .stroke(Color.blue.opacity(0.3), lineWidth: 1)
-        )
     }
 }
 

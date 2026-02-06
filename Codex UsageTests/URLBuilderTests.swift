@@ -132,11 +132,6 @@ final class URLBuilderTests: XCTestCase {
         XCTAssertEqual(url.absoluteString, "https://console.anthropic.com/api/organizations")
     }
 
-    func testCodexStatusBuilder() throws {
-        let url = try URLBuilder.codexStatus(endpoint: "/status.json").build()
-        XCTAssertEqual(url.absoluteString, "https://status.codex.com/api/v2/status.json")
-    }
-
     // MARK: - Complex URL Tests
 
     func testComplexCodexURL() throws {

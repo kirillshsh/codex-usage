@@ -174,13 +174,6 @@ extension URLBuilder {
         return endpoint.isEmpty ? builder : try builder.appendingPath(endpoint)
     }
 
-    /// Create a builder for Codex Status endpoints
-    /// - Parameter endpoint: The API endpoint path
-    /// - Returns: A configured URLBuilder
-    static func codexStatus(endpoint: String = "") throws -> URLBuilder {
-        let builder = try URLBuilder(baseURL: "https://status.codex.com/api/v2")
-        return endpoint.isEmpty ? builder : try builder.appendingPath(endpoint)
-    }
 }
 
 // MARK: - Result-based API
