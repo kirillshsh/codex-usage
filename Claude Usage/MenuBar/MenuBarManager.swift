@@ -833,7 +833,7 @@ class MenuBarManager: NSObject, ObservableObject {
         LoggingService.shared.log("  - Profile: '\(profile.name)'")
         LoggingService.shared.log("  - hasUsageCredentials: \(profile.hasUsageCredentials)")
 
-        // Check for usage credentials (Claude.ai or API Console, not just CLI)
+        // Check for usage credentials (Claude.ai / CLI / Codex snapshot)
         guard profile.hasUsageCredentials else {
             LoggingService.shared.log("MenuBarManager: Skipping refresh - no usage credentials")
             // Update icons to show default logo if needed
@@ -917,29 +917,6 @@ class MenuBarManager: NSObject, ObservableObject {
 
                 // Don't show error for status - it's not critical
                 LoggingService.shared.log("MenuBarManager: Failed to fetch status - [\(appError.code.rawValue)] \(appError.message)")
-            }
-
-            // Fetch API usage if enabled (using active profile's API credentials)
-            if let profile = await MainActor.run(body: { self.profileManager.activeProfile }),
-               let apiSessionKey = profile.apiSessionKey,
-               let orgId = profile.apiOrganizationId {
-                do {
-                    let newAPIUsage = try await apiService.fetchAPIUsageData(organizationId: orgId, apiSessionKey: apiSessionKey)
-                    await MainActor.run {
-                        self.apiUsage = newAPIUsage
-
-                        // Save to active profile instead of global DataStore
-                        if let profileId = self.profileManager.activeProfile?.id {
-                            self.profileManager.saveAPIUsage(newAPIUsage, for: profileId)
-                        }
-                    }
-                } catch {
-                    // Convert to AppError and log
-                    let appError = AppError.wrap(error)
-                    ErrorLogger.shared.log(appError, severity: .info)
-
-                    LoggingService.shared.log("MenuBarManager: Failed to fetch API usage - [\(appError.code.rawValue)] \(appError.message)")
-                }
             }
 
             // Clear loading state

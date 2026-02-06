@@ -31,8 +31,6 @@ struct SettingsView: View {
                 // Credentials
                 case .claudeAI:
                     PersonalUsageView()
-                case .apiConsole:
-                    APIBillingView()
                 case .cliAccount:
                     CLIAccountView()
 
@@ -194,7 +192,6 @@ struct AppSettingsSection: View {
 enum SettingsSection: String, CaseIterable {
     // Credentials (not shown in sidebar)
     case claudeAI
-    case apiConsole
     case cliAccount
 
     // Profile Settings
@@ -211,7 +208,6 @@ enum SettingsSection: String, CaseIterable {
     var title: String {
         switch self {
         case .claudeAI: return "section.claudeai_title".localized
-        case .apiConsole: return "section.api_console_title".localized
         case .cliAccount: return "section.cli_account_title".localized
         case .appearance: return "section.appearance_title".localized
         case .general: return "section.general_title".localized
@@ -226,7 +222,6 @@ enum SettingsSection: String, CaseIterable {
     var icon: String {
         switch self {
         case .claudeAI: return "key.fill"
-        case .apiConsole: return "dollarsign.circle.fill"
         case .cliAccount: return "terminal.fill"
         case .appearance: return "paintbrush.fill"
         case .general: return "gearshape.fill"
@@ -241,7 +236,6 @@ enum SettingsSection: String, CaseIterable {
     var description: String {
         switch self {
         case .claudeAI: return "section.claudeai_desc".localized
-        case .apiConsole: return "section.api_console_desc".localized
         case .cliAccount: return "section.cli_account_desc".localized
         case .appearance: return "section.appearance_desc".localized
         case .general: return "section.general_desc".localized
@@ -255,7 +249,7 @@ enum SettingsSection: String, CaseIterable {
 
     var isCredential: Bool {
         switch self {
-        case .claudeAI, .apiConsole, .cliAccount:
+        case .claudeAI, .cliAccount:
             return true
         default:
             return false
@@ -328,19 +322,6 @@ struct ProfileCredentialCardsRow: View {
                     title: "Claude.ai",
                     isConnected: credentials?.hasClaudeAI ?? false,
                     isSelected: selectedSection == .claudeAI
-                )
-            }
-            .buttonStyle(.plain)
-
-            // API Console Card
-            Button {
-                selectedSection = .apiConsole
-            } label: {
-                CredentialMiniCard(
-                    icon: "dollarsign.circle.fill",
-                    title: "API Console",
-                    isConnected: credentials?.apiSessionKey != nil,
-                    isSelected: selectedSection == .apiConsole
                 )
             }
             .buttonStyle(.plain)

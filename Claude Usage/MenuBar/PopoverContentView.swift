@@ -17,10 +17,6 @@ struct PopoverContentView: View {
         manager.clickedProfileUsage ?? manager.usage
     }
 
-    private var displayAPIUsage: APIUsage? {
-        manager.clickedProfileAPIUsage ?? manager.apiUsage
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             // Smart Header with Status and Profile Switcher
@@ -44,7 +40,7 @@ struct PopoverContentView: View {
             )
 
             // Intelligent Usage Dashboard
-            SmartUsageDashboard(usage: displayUsage, apiUsage: displayAPIUsage)
+            SmartUsageDashboard(usage: displayUsage)
 
             // Contextual Insights
             if showInsights {
@@ -484,17 +480,11 @@ struct SmartHeader: View {
 // MARK: - Smart Usage Dashboard
 struct SmartUsageDashboard: View {
     let usage: ClaudeUsage
-    let apiUsage: APIUsage?
     @StateObject private var profileManager = ProfileManager.shared
 
     // Get the display mode from active profile's icon config
     private var showRemainingPercentage: Bool {
         profileManager.activeProfile?.iconConfig.showRemainingPercentage ?? true
-    }
-
-    // Check if API tracking is enabled globally
-    private var isAPITrackingEnabled: Bool {
-        DataStore.shared.loadAPITrackingEnabled()
     }
 
     var body: some View {
@@ -555,13 +545,6 @@ struct SmartUsageDashboard: View {
                 )
             }
 
-            // API Usage Card (only if tracking is enabled AND profile has credentials)
-            if isAPITrackingEnabled,
-               let apiUsage = apiUsage,
-               let profile = profileManager.activeProfile,
-               profile.hasAPIConsole {
-                APIUsageCard(apiUsage: apiUsage, showRemaining: showRemainingPercentage)
-            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -891,123 +874,5 @@ struct SmartActionButton: View {
                 isHovered = hovering
             }
         }
-    }
-}
-
-// MARK: - API Usage Card
-struct APIUsageCard: View {
-    let apiUsage: APIUsage
-    let showRemaining: Bool
-
-    /// Display percentage based on mode
-    private var displayPercentage: Double {
-        UsageStatusCalculator.getDisplayPercentage(
-            usedPercentage: apiUsage.usagePercentage,
-            showRemaining: showRemaining
-        )
-    }
-
-    /// Status level based on display mode
-    private var statusLevel: UsageStatusLevel {
-        UsageStatusCalculator.calculateStatus(
-            usedPercentage: apiUsage.usagePercentage,
-            showRemaining: showRemaining
-        )
-    }
-
-    /// Color based on status level
-    private var usageColor: Color {
-        switch statusLevel {
-        case .safe: return .green
-        case .moderate: return .blue
-        case .critical: return .red
-        }
-    }
-
-    var body: some View {
-        VStack(spacing: 12) {
-            // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("menubar.api_credits".localized)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.primary)
-
-                    Text("menubar.anthropic_console".localized)
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.secondary)
-                }
-
-                Spacer()
-
-                // Percentage
-                Text("\(Int(displayPercentage))%")
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .foregroundColor(usageColor)
-            }
-
-            // Progress Bar
-            ZStack(alignment: .leading) {
-                // Background
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.secondary.opacity(0.1))
-
-                // Fill
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(usageColor)
-                    .frame(maxWidth: .infinity)
-                    .scaleEffect(x: displayPercentage / 100.0, y: 1.0, anchor: .leading)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-            }
-            .frame(height: 8)
-
-            // Used / Remaining
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("menubar.used".localized)
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.secondary)
-                    Text(apiUsage.formattedUsed)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.primary)
-                }
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("menubar.remaining".localized)
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.secondary)
-                    Text(apiUsage.formattedRemaining)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.primary)
-                }
-            }
-
-            // Reset Time
-            if apiUsage.resetsAt > Date() {
-                HStack {
-                    Image(systemName: "clock.fill")
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
-
-                    Text("menubar.resets_time".localized(with: apiUsage.resetsAt.formatted(.relative(presentation: .named))))
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-                }
-            }
-        }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.4))
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(usageColor.opacity(0.2), lineWidth: 1)
-                )
-        )
     }
 }

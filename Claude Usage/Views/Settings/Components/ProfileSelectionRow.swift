@@ -49,9 +49,6 @@ struct ProfileSelectionRow: View {
                     if hasWeekMetric {
                         MetricBadge(letter: "W", color: .purple)
                     }
-                    if hasAPIMetric {
-                        MetricBadge(letter: "A", color: .blue)
-                    }
                 }
             }
             .padding(.vertical, DesignTokens.Spacing.extraSmall)
@@ -68,10 +65,6 @@ struct ProfileSelectionRow: View {
 
     private var hasWeekMetric: Bool {
         profile.iconConfig.metrics.first(where: { $0.metricType == .week })?.isEnabled ?? false
-    }
-
-    private var hasAPIMetric: Bool {
-        profile.iconConfig.metrics.first(where: { $0.metricType == .api })?.isEnabled ?? false
     }
 }
 

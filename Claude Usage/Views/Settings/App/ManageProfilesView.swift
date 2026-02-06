@@ -210,7 +210,6 @@ struct ManageProfilesView: View {
 
                         VStack(alignment: .leading, spacing: DesignTokens.Spacing.extraSmall) {
                             BulletPoint("profiles.about_credentials".localized)
-                            BulletPoint("profiles.about_api".localized)
                             BulletPoint("profiles.about_cli".localized)
                             BulletPoint("profiles.about_appearance".localized)
                             BulletPoint("profiles.about_notifications".localized)

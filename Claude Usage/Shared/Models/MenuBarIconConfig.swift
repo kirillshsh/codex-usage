@@ -277,14 +277,13 @@ struct MenuBarIconConfiguration: Codable, Equatable {
         showRemainingPercentage: Bool = true,
         metrics: [MetricIconConfig] = [
             .sessionDefault,
-            .weekDefault,
-            .apiDefault
+            .weekDefault
         ]
     ) {
         self.monochromeMode = monochromeMode
         self.showIconNames = showIconNames
         self.showRemainingPercentage = showRemainingPercentage
-        self.metrics = metrics
+        self.metrics = Self.sanitizeMetrics(metrics)
     }
 
     // MARK: - Codable (Custom decoder for backwards compatibility)
@@ -305,7 +304,8 @@ struct MenuBarIconConfiguration: Codable, Equatable {
         // New property - default to remaining mode for Codex tracker UX.
         showRemainingPercentage = try container.decodeIfPresent(Bool.self, forKey: .showRemainingPercentage) ?? true
 
-        metrics = try container.decode([MetricIconConfig].self, forKey: .metrics)
+        let decodedMetrics = try container.decode([MetricIconConfig].self, forKey: .metrics)
+        metrics = Self.sanitizeMetrics(decodedMetrics)
     }
 
     /// Get enabled metrics sorted by order
@@ -330,5 +330,27 @@ struct MenuBarIconConfiguration: Codable, Equatable {
     /// Default configuration (session only, like current behavior)
     static var `default`: MenuBarIconConfiguration {
         MenuBarIconConfiguration()
+    }
+
+    /// Removes deprecated API metric from persisted configs and normalizes ordering.
+    private static func sanitizeMetrics(_ source: [MetricIconConfig]) -> [MetricIconConfig] {
+        var seen = Set<MenuBarMetricType>()
+        var sanitized = source
+            .filter { $0.metricType != .api }
+            .sorted { $0.order < $1.order }
+            .filter { seen.insert($0.metricType).inserted }
+
+        if !sanitized.contains(where: { $0.metricType == .session }) {
+            sanitized.append(.sessionDefault)
+        }
+        if !sanitized.contains(where: { $0.metricType == .week }) {
+            sanitized.append(.weekDefault)
+        }
+
+        for index in sanitized.indices {
+            sanitized[index].order = index
+        }
+
+        return sanitized
     }
 }

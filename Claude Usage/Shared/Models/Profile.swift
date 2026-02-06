@@ -105,9 +105,9 @@ struct Profile: Codable, Identifiable, Equatable {
         return FileManager.default.fileExists(atPath: snapshotPath)
     }
 
-    /// True if profile has credentials that can fetch usage data (Claude.ai, CLI OAuth, or API Console)
+    /// True if profile has credentials that can fetch usage data (Claude.ai, CLI OAuth, or local Codex snapshot)
     var hasUsageCredentials: Bool {
-        hasClaudeAI || hasAPIConsole || hasValidCLIOAuth || hasValidSystemCLIOAuth || hasCodexSnapshot
+        hasClaudeAI || hasValidCLIOAuth || hasValidSystemCLIOAuth || hasCodexSnapshot
     }
 
     /// True if profile has CLI OAuth credentials that are not expired
@@ -128,7 +128,7 @@ struct Profile: Codable, Identifiable, Equatable {
     }
 
     var hasAnyCredentials: Bool {
-        hasClaudeAI || hasAPIConsole || cliCredentialsJSON != nil || hasCodexSnapshot
+        hasClaudeAI || cliCredentialsJSON != nil || hasCodexSnapshot
     }
 }
 
