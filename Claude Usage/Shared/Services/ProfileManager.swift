@@ -40,6 +40,19 @@ class ProfileManager: ObservableObject {
             syncCLICredentialsToDefaultProfile(defaultProfile.id)
         }
 
+        // Codex mode default: show remaining instead of used percentages.
+        var didMigrateRemainingMode = false
+        for index in profiles.indices {
+            if profiles[index].iconConfig.showRemainingPercentage == false {
+                profiles[index].iconConfig.showRemainingPercentage = true
+                didMigrateRemainingMode = true
+            }
+        }
+        if didMigrateRemainingMode {
+            profileStore.saveProfiles(profiles)
+            LoggingService.shared.log("ProfileManager: Migrated profiles to remaining percentage display mode")
+        }
+
         // Load active profile
         if let activeId = profileStore.loadActiveProfileId(),
            let profile = profiles.first(where: { $0.id == activeId }) {

@@ -404,9 +404,26 @@ def print_report(snapshot: dict[str, Any]) -> None:
     session = _safe_dict(snapshot.get("session_window"))
     weekly = _safe_dict(snapshot.get("weekly_window"))
     windows = _safe_dict(snapshot.get("windows"))
+    config = _safe_dict(snapshot.get("config"))
 
     session_usage = TokenUsage.from_mapping(_safe_dict(session.get("usage")))
     weekly_usage = TokenUsage.from_mapping(_safe_dict(weekly.get("usage")))
+    session_used_percent = _safe_float_or_none(session.get("used_percent"))
+    weekly_used_percent = _safe_float_or_none(weekly.get("used_percent"))
+
+    session_remaining_percent = _remaining_percent(session_used_percent)
+    weekly_remaining_percent = _remaining_percent(weekly_used_percent)
+
+    session_remaining_tokens = _estimate_remaining_tokens(
+        used_tokens=session_usage.total_tokens,
+        used_percent=session_used_percent,
+        configured_limit=_safe_int_or_none(config.get("session_limit_tokens")),
+    )
+    weekly_remaining_tokens = _estimate_remaining_tokens(
+        used_tokens=weekly_usage.total_tokens,
+        used_percent=weekly_used_percent,
+        configured_limit=_safe_int_or_none(config.get("week_limit_tokens")),
+    )
 
     print("Codex CLI Usage Tracker")
     print(f"Updated: {snapshot.get('generated_at') or 'n/a'}")
@@ -414,21 +431,27 @@ def print_report(snapshot: dict[str, Any]) -> None:
 
     print("Session Window")
     print(f"  window: {session.get('window_minutes') or DEFAULT_SESSION_WINDOW_MINUTES} min")
-    print(f"  tokens: {_format_int(session_usage.total_tokens)}")
-    if session.get("used_percent") is None:
-        print("  used: n/a")
+    if session_remaining_tokens is None:
+        print("  remaining tokens: n/a")
     else:
-        print(f"  used: {float(session['used_percent']):.1f}%")
+        print(f"  remaining tokens: {_format_int(session_remaining_tokens)}")
+    if session_remaining_percent is None:
+        print("  remaining: n/a")
+    else:
+        print(f"  remaining: {session_remaining_percent:.1f}%")
     print(f"  reset in: {_format_duration(session.get('resets_in_seconds'))}")
     print()
 
     print("Weekly Window")
     print(f"  window: {weekly.get('window_minutes') or DEFAULT_WEEK_WINDOW_MINUTES} min")
-    print(f"  tokens: {_format_int(weekly_usage.total_tokens)}")
-    if weekly.get("used_percent") is None:
-        print("  used: n/a")
+    if weekly_remaining_tokens is None:
+        print("  remaining tokens: n/a")
     else:
-        print(f"  used: {float(weekly['used_percent']):.1f}%")
+        print(f"  remaining tokens: {_format_int(weekly_remaining_tokens)}")
+    if weekly_remaining_percent is None:
+        print("  remaining: n/a")
+    else:
+        print(f"  remaining: {weekly_remaining_percent:.1f}%")
     print(f"  reset in: {_format_duration(weekly.get('resets_in_seconds'))}")
     print()
 
@@ -441,20 +464,46 @@ def print_report(snapshot: dict[str, Any]) -> None:
 def print_statusline(snapshot: dict[str, Any]) -> None:
     session = _safe_dict(snapshot.get("session_window"))
     weekly = _safe_dict(snapshot.get("weekly_window"))
+    config = _safe_dict(snapshot.get("config"))
 
     session_tokens = _safe_int(_safe_dict(session.get("usage")).get("total_tokens"))
     weekly_tokens = _safe_int(_safe_dict(weekly.get("usage")).get("total_tokens"))
 
-    session_percent = _safe_float_or_none(session.get("used_percent"))
-    weekly_percent = _safe_float_or_none(weekly.get("used_percent"))
+    session_used_percent = _safe_float_or_none(session.get("used_percent"))
+    weekly_used_percent = _safe_float_or_none(weekly.get("used_percent"))
 
-    session_text = f"5h {_format_int(session_tokens)} tok"
-    weekly_text = f"7d {_format_int(weekly_tokens)} tok"
+    session_remaining_percent = _remaining_percent(session_used_percent)
+    weekly_remaining_percent = _remaining_percent(weekly_used_percent)
 
-    if session_percent is not None:
-        session_text = f"5h {session_percent:.1f}% ({_format_int(session_tokens)})"
-    if weekly_percent is not None:
-        weekly_text = f"7d {weekly_percent:.1f}% ({_format_int(weekly_tokens)})"
+    session_remaining_tokens = _estimate_remaining_tokens(
+        used_tokens=session_tokens,
+        used_percent=session_used_percent,
+        configured_limit=_safe_int_or_none(config.get("session_limit_tokens")),
+    )
+    weekly_remaining_tokens = _estimate_remaining_tokens(
+        used_tokens=weekly_tokens,
+        used_percent=weekly_used_percent,
+        configured_limit=_safe_int_or_none(config.get("week_limit_tokens")),
+    )
+
+    session_text = "5h left n/a"
+    weekly_text = "7d left n/a"
+
+    if session_remaining_percent is not None:
+        if session_remaining_tokens is not None:
+            session_text = f"5h left {session_remaining_percent:.1f}% ({_format_int(session_remaining_tokens)})"
+        else:
+            session_text = f"5h left {session_remaining_percent:.1f}%"
+    elif session_remaining_tokens is not None:
+        session_text = f"5h left {_format_int(session_remaining_tokens)} tok"
+
+    if weekly_remaining_percent is not None:
+        if weekly_remaining_tokens is not None:
+            weekly_text = f"7d left {weekly_remaining_percent:.1f}% ({_format_int(weekly_remaining_tokens)})"
+        else:
+            weekly_text = f"7d left {weekly_remaining_percent:.1f}%"
+    elif weekly_remaining_tokens is not None:
+        weekly_text = f"7d left {_format_int(weekly_remaining_tokens)} tok"
 
     reset_text = _format_duration(session.get("resets_in_seconds"))
     print(f"Codex {session_text} | {weekly_text} | reset {reset_text}")
@@ -620,6 +669,30 @@ def _safe_float_or_none(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _remaining_percent(used_percent: float | None) -> float | None:
+    if used_percent is None:
+        return None
+    return max(0.0, min(100.0, 100.0 - used_percent))
+
+
+def _estimate_limit_tokens(used_tokens: int, used_percent: float | None, configured_limit: int | None) -> int | None:
+    if configured_limit is not None and configured_limit > 0:
+        return configured_limit
+
+    if used_percent is None or used_percent <= 0:
+        return None
+
+    estimated = int(round((float(used_tokens) * 100.0) / used_percent))
+    return max(estimated, used_tokens)
+
+
+def _estimate_remaining_tokens(used_tokens: int, used_percent: float | None, configured_limit: int | None) -> int | None:
+    limit = _estimate_limit_tokens(used_tokens, used_percent, configured_limit)
+    if limit is None:
+        return None
+    return max(limit - used_tokens, 0)
 
 
 def _parse_iso8601(value: Any) -> datetime | None:

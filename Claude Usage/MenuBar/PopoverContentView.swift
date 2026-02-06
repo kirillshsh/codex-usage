@@ -489,7 +489,7 @@ struct SmartUsageDashboard: View {
 
     // Get the display mode from active profile's icon config
     private var showRemainingPercentage: Bool {
-        profileManager.activeProfile?.iconConfig.showRemainingPercentage ?? false
+        profileManager.activeProfile?.iconConfig.showRemainingPercentage ?? true
     }
 
     // Check if API tracking is enabled globally

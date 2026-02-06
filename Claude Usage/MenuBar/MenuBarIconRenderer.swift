@@ -142,8 +142,12 @@ final class MenuBarIconRenderer {
             if config.weekDisplayMode == .percentage {
                 displayText = "\(Int(displayPercentage))%"
             } else {
-                // Token display mode - smart formatting
-                displayText = formatTokenCount(usage.weeklyTokensUsed, usage.weeklyLimit)
+                // Token display mode: in remaining mode show remaining tokens.
+                let usedTokens = max(usage.weeklyTokensUsed, 0)
+                let limitTokens = max(usage.weeklyLimit, 0)
+                let remainingTokens = max(limitTokens - usedTokens, 0)
+                let valueToDisplay = showRemaining ? remainingTokens : usedTokens
+                displayText = formatTokenCount(valueToDisplay, limitTokens)
             }
 
             return MetricData(
@@ -1026,7 +1030,7 @@ final class MenuBarIconRenderer {
     }
 
     /// Formats token count intelligently (e.g., 1M instead of 1000K)
-    private func formatTokenCount(_ used: Int, _ limit: Int) -> String {
+    private func formatTokenCount(_ value: Int, _ limit: Int) -> String {
         func formatSingleValue(_ value: Int) -> String {
             if value >= 1_000_000 {
                 let millions = Double(value) / 1_000_000.0
@@ -1047,6 +1051,6 @@ final class MenuBarIconRenderer {
             }
         }
 
-        return "\(formatSingleValue(used))/\(formatSingleValue(limit))"
+        return "\(formatSingleValue(value))/\(formatSingleValue(limit))"
     }
 }

@@ -274,7 +274,7 @@ struct MenuBarIconConfiguration: Codable, Equatable {
     init(
         monochromeMode: Bool = false,
         showIconNames: Bool = true,
-        showRemainingPercentage: Bool = false,
+        showRemainingPercentage: Bool = true,
         metrics: [MetricIconConfig] = [
             .sessionDefault,
             .weekDefault,
@@ -302,8 +302,8 @@ struct MenuBarIconConfiguration: Codable, Equatable {
         monochromeMode = try container.decode(Bool.self, forKey: .monochromeMode)
         showIconNames = try container.decode(Bool.self, forKey: .showIconNames)
 
-        // New property - provide default value if missing (backwards compatibility)
-        showRemainingPercentage = try container.decodeIfPresent(Bool.self, forKey: .showRemainingPercentage) ?? false
+        // New property - default to remaining mode for Codex tracker UX.
+        showRemainingPercentage = try container.decodeIfPresent(Bool.self, forKey: .showRemainingPercentage) ?? true
 
         metrics = try container.decode([MetricIconConfig].self, forKey: .metrics)
     }
