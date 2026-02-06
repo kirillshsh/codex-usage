@@ -22,24 +22,20 @@
 > Tracker docs: [`codex_usage_tracker/README.md`](codex_usage_tracker/README.md)
 >
 <div align="center">
-  <img src=".github/cover.jpg" alt="Codex Usage Tracker" width="100%">
-
   **A native macOS menu bar application for real-time monitoring of Codex AI usage limits**
 
   ![macOS](https://img.shields.io/badge/macOS-14.0+-black?style=flat-square&logo=apple)
   ![Swift](https://img.shields.io/badge/Swift-5.0+-orange?style=flat-square&logo=swift)
   ![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0+-blue?style=flat-square&logo=swift)
   ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
-  ![Version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)
-  ![Languages](https://img.shields.io/badge/languages-8-purple?style=flat-square)
+  ![Version](https://img.shields.io/badge/version-codex--fork-blue?style=flat-square)
+  ![Languages](https://img.shields.io/badge/languages-11-purple?style=flat-square)
 
-  <sub>🇬🇧 English • 🇪🇸 Español • 🇫🇷 Français • 🇩🇪 Deutsch • 🇮🇹 Italiano • 🇵🇹 Português • 🇯🇵 日本語 • 🇰🇷 한국어</sub>
+  <sub>🇬🇧 English • 🇷🇺 Русский • 🇺🇦 Українська • 🇧🇾 Беларуская • 🇪🇸 Español • 🇫🇷 Français • 🇩🇪 Deutsch • 🇮🇹 Italiano • 🇵🇹 Português • 🇯🇵 日本語 • 🇰🇷 한국어</sub>
 
-  ### [Download Latest Release (v2.3.0)](https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases/latest/download/Codex-Usage.zip)
+  ### [Download Latest Release](https://github.com/kirillshsh/codex-usage/releases/latest)
 
   <sub>macOS 14.0+ (Sonoma) | ~4 MB | Native Swift/SwiftUI | Officially Signed</sub>
-
-  <a href="https://www.buymeacoffee.com/hamedelfayome" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40"></a>
 </div>
 
 ---
@@ -139,7 +135,7 @@ brew uninstall --cask codex-usage-tracker
 
 #### Option 2: Direct Download
 
-**[Download Codex-Usage.zip](https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases/latest/download/Codex-Usage.zip)**
+**[Download from GitHub Releases](https://github.com/kirillshsh/codex-usage/releases/latest)**
 
 1. Download the `.zip` file from the link above
 2. Extract the zip file (double-click or use Archive Utility)
