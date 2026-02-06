@@ -6,7 +6,7 @@
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RESOURCES_DIR="$SCRIPT_DIR/../Claude Usage/Resources"
+RESOURCES_DIR="$SCRIPT_DIR/../Codex Usage/Resources"
 
 echo "🌍 Validating Localization Files..."
 echo "===================================="

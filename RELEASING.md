@@ -1,6 +1,6 @@
 # Release Process
 
-This document describes how to create a new release of Claude Usage Tracker.
+This document describes how to create a new release of Codex Usage Tracker.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ This document describes how to create a new release of Claude Usage Tracker.
 
 ### 1. Update Version Numbers
 
-Edit `Claude Usage.xcodeproj/project.pbxproj`:
+Edit `Codex Usage.xcodeproj/project.pbxproj`:
 
 ```bash
 # Update MARKETING_VERSION (e.g., 2.1.0 → 2.2.0)
@@ -43,7 +43,7 @@ Add a new section at the top with:
 ### 3. Commit Version Changes
 
 ```bash
-git add Claude\ Usage.xcodeproj/project.pbxproj CHANGELOG.md
+git add Codex\ Usage.xcodeproj/project.pbxproj CHANGELOG.md
 git commit -m "chore: Bump version to X.Y.Z"
 git push
 ```
@@ -78,12 +78,12 @@ The tag push triggers three automated workflows:
 3. **Update Homebrew Cask workflow** (triggers after release)
    - Automatically updates Homebrew formula
 
-Monitor at: `https://github.com/hamed-elfayome/Claude-Usage-Tracker/actions`
+Monitor at: `https://github.com/hamed-elfayome/Codex-Usage-Tracker/actions`
 
 ### 6. Verify Release
 
 1. Check GitHub releases page for the new release
-2. Verify appcast: `https://hamed-elfayome.github.io/Claude-Usage-Tracker/appcast.xml`
+2. Verify appcast: `https://hamed-elfayome.github.io/Codex-Usage-Tracker/appcast.xml`
 3. Test in-app update:
    - Run an older version of the app
    - Check for updates
@@ -95,7 +95,7 @@ Monitor at: `https://github.com/hamed-elfayome/Claude-Usage-Tracker/actions`
 
 - Check `CURRENT_PROJECT_VERSION` was incremented (not just `MARKETING_VERSION`)
 - Verify appcast.xml has higher `<sparkle:version>` number
-- Clear app caches: `~/Library/Caches/HamedElfayome.Claude-Usage/`
+- Clear app caches: `~/Library/Caches/HamedElfayome.Codex-Usage/`
 
 ### Signature validation error
 
@@ -113,8 +113,8 @@ Monitor at: `https://github.com/hamed-elfayome/Claude-Usage-Tracker/actions`
 
 ```bash
 # Full release in 4 commands:
-sed -i '' 's/MARKETING_VERSION = X.Y.Z/MARKETING_VERSION = X.Y.Z+1/g' Claude\ Usage.xcodeproj/project.pbxproj
-sed -i '' 's/CURRENT_PROJECT_VERSION = N/CURRENT_PROJECT_VERSION = N+1/g' Claude\ Usage.xcodeproj/project.pbxproj
+sed -i '' 's/MARKETING_VERSION = X.Y.Z/MARKETING_VERSION = X.Y.Z+1/g' Codex\ Usage.xcodeproj/project.pbxproj
+sed -i '' 's/CURRENT_PROJECT_VERSION = N/CURRENT_PROJECT_VERSION = N+1/g' Codex\ Usage.xcodeproj/project.pbxproj
 git add -A && git commit -m "chore: Bump version to X.Y.Z+1" && git push
 git tag -a vX.Y.Z+1 -m "Release vX.Y.Z+1" && git push origin vX.Y.Z+1
 ```

@@ -9,7 +9,7 @@ We release security updates for the latest stable version only. Please ensure yo
 | 1.6.x   | :white_check_mark: |
 | < 1.6   | :x:                |
 
-[Download the latest version](https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/latest)
+[Download the latest version](https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases/latest)
 
 ## Reporting a Vulnerability
 
@@ -21,7 +21,7 @@ We take security seriously. If you discover a security vulnerability, please rep
 
 Instead, use GitHub's private security advisory feature:
 
-1. Go to the [Security tab](https://github.com/hamed-elfayome/Claude-Usage-Tracker/security/advisories)
+1. Go to the [Security tab](https://github.com/hamed-elfayome/Codex-Usage-Tracker/security/advisories)
 2. Click "Report a vulnerability"
 3. Provide detailed information about the vulnerability
 
@@ -48,9 +48,9 @@ We'll keep you informed throughout the process and credit you in the security ad
 
 ### Session Key Storage
 
-- Session keys are stored locally in `~/.claude-session-key`
+- Session keys are stored locally in `~/.codex-session-key`
 - File permissions are automatically set to `0600` (owner read/write only)
-- Keys are never transmitted except to `claude.ai` via HTTPS
+- Keys are never transmitted except to `codex.ai` via HTTPS
 - No cloud sync or external storage
 
 ### Application Signing
@@ -63,13 +63,13 @@ We'll keep you informed throughout the process and credit you in the security ad
 ### Network Security
 
 - All communication uses **HTTPS only**
-- API requests are sent exclusively to `claude.ai` endpoints
+- API requests are sent exclusively to `codex.ai` endpoints
 - No telemetry, analytics, or third-party tracking
 - Session authentication via secure cookies only
 
 ### Code Execution
 
-- Claude Code integration scripts are installed to `~/.claude/`
+- Codex Code integration scripts are installed to `~/.codex/`
 - Script permissions are set to `755` (read/execute for all, write for owner)
 - Scripts only read the existing session key file
 - No arbitrary code execution from external sources
@@ -77,7 +77,7 @@ We'll keep you informed throughout the process and credit you in the security ad
 ### Sandboxing
 
 - App Sandbox is **disabled** to allow file system access
-- Required for reading `~/.claude-session-key` and writing `~/.claude/` scripts
+- Required for reading `~/.codex-session-key` and writing `~/.codex/` scripts
 - Necessary trade-off for the app's core functionality
 
 ## Best Practices for Users
@@ -86,14 +86,14 @@ We'll keep you informed throughout the process and credit you in the security ad
 
 - Never share your session key publicly
 - Treat it like a password
-- Rotate it if you suspect compromise (extract a fresh key from claude.ai)
-- Check file permissions: `ls -la ~/.claude-session-key` should show `-rw-------`
+- Rotate it if you suspect compromise (extract a fresh key from codex.ai)
+- Check file permissions: `ls -la ~/.codex-session-key` should show `-rw-------`
 
 ### Verify Downloads
 
 - Download only from official sources:
-  - [GitHub Releases](https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases)
-  - [Homebrew Tap](https://github.com/ggfevans/homebrew-claude-usage-tracker)
+  - [GitHub Releases](https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases)
+  - [Homebrew Tap](https://github.com/ggfevans/homebrew-codex-usage-tracker)
 - Build from source if you prefer: `git clone` + Xcode build
 
 ### Keep Updated
@@ -110,10 +110,10 @@ We recognize and appreciate security researchers who help keep our community saf
 - Acknowledged in release notes
 - Listed as security contributors in the project
 
-Thank you for helping keep Claude Usage Tracker secure!
+Thank you for helping keep Codex Usage Tracker secure!
 
 ## Questions?
 
-For non-security related issues, please use [GitHub Issues](https://github.com/hamed-elfayome/Claude-Usage-Tracker/issues).
+For non-security related issues, please use [GitHub Issues](https://github.com/hamed-elfayome/Codex-Usage-Tracker/issues).
 
 For general questions, see our [Contributing Guide](CONTRIBUTING.md).

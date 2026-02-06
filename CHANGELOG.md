@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Claude Usage Tracker will be documented in this file.
+All notable changes to Codex Usage Tracker will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Major Release - Multi-Profile Menu Bar Display & Enhanced UI
 
-This release introduces a revolutionary multi-profile menu bar display system, allowing you to monitor multiple Claude accounts simultaneously. Combined with intelligent color adaptation, unified usage calculations, and the ability to show remaining vs. used percentages, v2.3.0 transforms how you track usage across all your profiles.
+This release introduces a revolutionary multi-profile menu bar display system, allowing you to monitor multiple Codex accounts simultaneously. Combined with intelligent color adaptation, unified usage calculations, and the ability to show remaining vs. used percentages, v2.3.0 transforms how you track usage across all your profiles.
 
 ### Added
 
@@ -155,7 +155,7 @@ This release introduces a revolutionary multi-profile menu bar display system, a
 ## [2.2.3] - 2026-01-18
 
 ### Added
-- **Setup wizard banners**: Claude Code info (shows when CLI credentials exist) and data migration (import from previous versions)
+- **Setup wizard banners**: Codex Code info (shows when CLI credentials exist) and data migration (import from previous versions)
 - Manual migration with auto-close on success
 - Complete localization in 8 languages
 
@@ -167,8 +167,8 @@ This release introduces a revolutionary multi-profile menu bar display system, a
 
 #### CLI OAuth Authentication Fallback
 - **Robust authentication system** with automatic fallback
-  - Prioritizes claude.ai session key as primary authentication method
-  - Falls back to Claude Code CLI OAuth when session key unavailable
+  - Prioritizes codex.ai session key as primary authentication method
+  - Falls back to Codex Code CLI OAuth when session key unavailable
   - System Keychain integration for CLI OAuth tokens
   - Automatic token expiration checking in Profile model
   - Seamless authentication without user intervention
@@ -184,8 +184,8 @@ This release introduces a revolutionary multi-profile menu bar display system, a
 
 ### Technical Improvements
 
-- Enhanced ClaudeAPIService with multi-authentication support
-- ClaudeCodeSyncService improvements for better token management
+- Enhanced CodexAPIService with multi-authentication support
+- CodexCodeSyncService improvements for better token management
 - Network client entitlements for proper API access
 - Image asset refinements
 
@@ -194,8 +194,8 @@ This release introduces a revolutionary multi-profile menu bar display system, a
 ## [2.2.1] - 2026-01-14
 
 ### Added
-- **Sonnet Weekly Usage Tracking**: Display Claude Sonnet 3.5 specific weekly usage alongside total weekly usage
-  - New `sonnetWeeklyTokensUsed` and `sonnetWeeklyPercentage` fields in ClaudeUsage model
+- **Sonnet Weekly Usage Tracking**: Display Codex Sonnet 3.5 specific weekly usage alongside total weekly usage
+  - New `sonnetWeeklyTokensUsed` and `sonnetWeeklyPercentage` fields in CodexUsage model
   - Added to popover display with localization support in all 8 languages
   - Parsed from `seven_day_sonnet_3_5` API field
 
@@ -214,12 +214,12 @@ This release introduces a revolutionary multi-profile menu bar display system, a
 
 ### Major Release - Multi-Profile Management System 
 
-This major release introduces comprehensive multi-profile support, allowing you to manage unlimited Claude accounts with automatic credential switching and per-profile settings. Combined with Claude Code CLI integration and Korean language support, v2.2.0 represents a significant evolution of the application.
+This major release introduces comprehensive multi-profile support, allowing you to manage unlimited Codex accounts with automatic credential switching and per-profile settings. Combined with Codex Code CLI integration and Korean language support, v2.2.0 represents a significant evolution of the application.
 
 ### Added
 
 #### Multi-Profile System
-- **Unlimited Profiles**: Create and manage unlimited profiles for different Claude accounts
+- **Unlimited Profiles**: Create and manage unlimited profiles for different Codex accounts
   - Each profile has isolated credentials, settings, and usage data
   - Fun auto-generated names ("Quantum Llama", "Sneaky Penguin", "Turbo Sloth", etc.)
   - Custom naming support - rename profiles to whatever you prefer
@@ -230,27 +230,27 @@ This major release introduces comprehensive multi-profile support, allowing you 
   - Popover header dropdown with profile badges
   - Settings sidebar picker with visual indicators
   - Dedicated "Manage Profiles" tab for full profile management
-  - Profile badges show Claude.ai and CLI credential status
+  - Profile badges show Codex.ai and CLI credential status
 
 - **Per-Profile Settings**: Each profile maintains independent configuration
-  - Credentials: Claude.ai session key, organization ID, API keys
+  - Credentials: Codex.ai session key, organization ID, API keys
   - Appearance: Icon style, monochrome mode (5 icon styles available)
   - Refresh interval: 5-300 seconds
   - Auto-start sessions: Enable/disable per profile
   - Notifications: Independent threshold alerts (75%, 90%, 95%)
   - Usage data: Tracked and stored separately per profile
 
-#### Claude Code CLI Integration
-- **ClaudeCodeSyncService**: New service for CLI credential management
-  - One-click sync from currently logged-in Claude Code account
-  - Reads credentials from system Keychain (`Claude Code-credentials`)
+#### Codex Code CLI Integration
+- **CodexCodeSyncService**: New service for CLI credential management
+  - One-click sync from currently logged-in Codex Code account
+  - Reads credentials from system Keychain (`Codex Code-credentials`)
   - Stores credentials per-profile for isolated management
   - Security command integration for Keychain read/write operations
 
 - **Automatic Credential Switching**: Seamless CLI account switching
   - When changing profiles, CLI credentials automatically update
   - System Keychain updated with selected profile's credentials
-  - Claude Code automatically switches to the profile's account
+  - Codex Code automatically switches to the profile's account
   - Smart re-sync before switching captures any CLI login changes
 
 - **CLI Account Settings Tab**: Dedicated UI for CLI management
@@ -269,7 +269,7 @@ This major release introduces comprehensive multi-profile support, allowing you 
 - **AutoStartSessionService**: Background monitoring for all profiles
   - 5-minute check cycle monitors all profiles with auto-start enabled
   - Detects session resets (usage drops to 0%)
-  - Automatically initializes new sessions using Claude 3.5 Haiku
+  - Automatically initializes new sessions using Codex 3.5 Haiku
   - Per-profile auto-start toggle in General settings
   - Notification on successful auto-start
   - Works independently for each profile
@@ -284,13 +284,13 @@ This major release introduces comprehensive multi-profile support, allowing you 
 #### Reorganized Settings Interface
 - **New Settings Structure**: Modern sidebar with profile switcher
   - Profile switcher at top of sidebar
-  - Credentials section: Claude.AI, API Console, CLI Account
+  - Credentials section: Codex.AI, API Console, CLI Account
   - Profile Settings: Appearance, General
-  - App-Wide Settings: Manage Profiles, Language, Claude Code, Updates, About
+  - App-Wide Settings: Manage Profiles, Language, Codex Code, Updates, About
 
 - **New Settings Tabs**:
   - **Manage Profiles**: Full profile CRUD operations
-  - **CLI Account**: Claude Code credential sync management
+  - **CLI Account**: Codex Code credential sync management
   - **Language Settings**: Dedicated language selection tab (previously in General)
 
 - **DesignTokens**: Centralized design system
@@ -302,7 +302,7 @@ This major release introduces comprehensive multi-profile support, allowing you 
 - **Profile Model** (Shared/Models/Profile.swift)
   - Complete profile representation with all settings
   - Credentials stored directly in profile (encrypted in UserDefaults)
-  - Computed properties: hasClaudeAI, hasAPIConsole, hasUsageCredentials
+  - Computed properties: hasCodexAI, hasAPIConsole, hasUsageCredentials
   - Per-profile usage data storage
 
 - **ProfileManager** (Shared/Services/ProfileManager.swift)
@@ -390,14 +390,14 @@ This major release introduces comprehensive multi-profile support, allowing you 
   - Notifications configured per profile
 
 - **SettingsSection Enum**: Expanded and reorganized
-  - Credentials: `.claudeAI`, `.apiConsole`, `.cliAccount`
+  - Credentials: `.codexAI`, `.apiConsole`, `.cliAccount`
   - Profile Settings: `.appearance`, `.general`
-  - App-Wide: `.manageProfiles`, `.language`, `.claudeCode`, `.updates`, `.about`
+  - App-Wide: `.manageProfiles`, `.language`, `.codexCode`, `.updates`, `.about`
 
 #### Popover Interface
 - **Profile Switcher Header**: New compact profile selector
   - Dropdown menu showing all profiles
-  - Profile badges (CLI , Claude.ai , active indicator)
+  - Profile badges (CLI , Codex.ai , active indicator)
   - "Manage Profiles" quick action
   - Active profile name prominently displayed
 
@@ -443,7 +443,7 @@ This major release introduces comprehensive multi-profile support, allowing you 
   - Main Actor isolation for thread safety
 
 - **Service Layer**:
-  - ClaudeCodeSyncService for CLI integration
+  - CodexCodeSyncService for CLI integration
   - AutoStartSessionService for background monitoring
   - ProfileMigrationService for seamless upgrades
 
@@ -456,7 +456,7 @@ This major release introduces comprehensive multi-profile support, allowing you 
 #### Code Organization
 - **20 New Files Added**:
   - 4 Models: Profile, NotificationSettings, ProfileDisplayMode, (+ ProfileCredentials)
-  - 4 Services: ProfileManager, ClaudeCodeSyncService, AutoStartSessionService, ProfileMigrationService
+  - 4 Services: ProfileManager, CodexCodeSyncService, AutoStartSessionService, ProfileMigrationService
   - 2 Storage: ProfileStore, SharedDataStore
   - 1 Utility: FunnyNameGenerator
   - 6 Views: ManageProfilesView, CLIAccountView, LanguageSettingsView, + reorganized credential views
@@ -492,7 +492,7 @@ This major release introduces comprehensive multi-profile support, allowing you 
 ### Security Notes
 
 - **CLI Credentials Stored Securely**: Per-profile in UserDefaults (encrypted)
-- **System Keychain Integration**: Reads/writes Claude Code credentials via `security` command
+- **System Keychain Integration**: Reads/writes Codex Code credentials via `security` command
 - **Credential Isolation**: Each profile's credentials completely isolated
 - **Migration Safety**: Old Keychain keys preserved during migration
 
@@ -701,7 +701,7 @@ This release brings a completely redesigned setup experience with a 3-step wizar
 
 ### Major Release - Professional Grade Security & User Experience
 
-This major release represents a significant milestone for Claude Usage Tracker, bringing professional-grade features including official Apple code signing, automatic updates, and enterprise-level security.
+This major release represents a significant milestone for Codex Usage Tracker, bringing professional-grade features including official Apple code signing, automatic updates, and enterprise-level security.
 
 ### Added
 
@@ -793,7 +793,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 
 #### API Service Architecture
 - **Refactored API Service** - Cleaner, more maintainable code structure
-  - ClaudeAPIService split into extensions (ConsoleAPI, Types)
+  - CodexAPIService split into extensions (ConsoleAPI, Types)
   - Improved organization ID fetching with session key parameter
   - Enhanced error handling throughout API layer
   - Better separation of concerns
@@ -834,7 +834,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - URLBuilderTests - API endpoint construction testing
   - DataStoreTests - Storage layer testing
   - DateExtensionsTests - Date utility testing
-  - ClaudeUsageTests - Core functionality testing
+  - CodexUsageTests - Core functionality testing
 
 #### CI/CD Pipeline
 - **Automated Release Workflow** - Professional release pipeline
@@ -973,7 +973,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 - **New API Settings Tab** - Configure API console usage tracking separately from web usage
   - API session key input field with validation
   - Organization ID configuration
-  - Dual tracking capability: Monitor both claude.ai web usage and API console usage simultaneously
+  - Dual tracking capability: Monitor both codex.ai web usage and API console usage simultaneously
   - API billing view integration
 
 - **API Usage Display** - Enhanced popover shows API console usage data
@@ -981,7 +981,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - Separate tracking from web usage metrics
   - Seamless integration with existing usage views
 
-- **ClaudeAPIService Enhancements** - Extended API service to support multiple endpoints
+- **CodexAPIService Enhancements** - Extended API service to support multiple endpoints
   - API console endpoint integration (`https://api.anthropic.com/v1/organization/{org_id}/usage`)
   - Dual authentication support (session cookie + API key)
   - Parallel usage data fetching for both web and API
@@ -991,7 +991,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - **Battery Style**: Classic battery indicator with fill level (original style)
   - **Progress Bar**: Horizontal progress bar with percentage display
   - **Percentage Only**: Minimalist text-only display
-  - **Icon with Bar**: Claude icon with integrated progress bar
+  - **Icon with Bar**: Codex icon with integrated progress bar
   - **Compact**: Space-efficient minimal design
 
 - **New Appearance Settings Tab** - Dedicated UI for visual customization
@@ -1017,7 +1017,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - **APIBillingView**: API console billing and usage display
   - **AboutView**: Version info, credits, and links
   - **AppearanceSettingsView**: Icon styles and visual preferences (new)
-  - **ClaudeCodeView**: Terminal statusline configuration
+  - **CodexCodeView**: Terminal statusline configuration
   - **GeneralSettingsView**: Session key and refresh settings
   - **NotificationsSettingsView**: Alert preferences
   - **PersonalUsageView**: Individual usage tracking
@@ -1092,7 +1092,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 ### Fixed
 
 - **Settings Layout Consistency** - Adjusted spacing and alignment across all settings views
-  - Uniform padding in General, Notifications, Session, and Claude Code tabs
+  - Uniform padding in General, Notifications, Session, and Codex Code tabs
   - Consistent component spacing throughout settings interface
   - Better visual balance in About view
 
@@ -1163,7 +1163,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 ### Fixed
 
 #### Popover UI Improvements
-- **Enhanced Status Display** - Improved Claude system status UI in popover
+- **Enhanced Status Display** - Improved Codex system status UI in popover
   - Better visual hierarchy for status information
   - Refined spacing and layout
   - Improved readability of status messages
@@ -1191,21 +1191,21 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 
 ### Added
 
-#### Claude System Status Indicator
-- **Real-time Claude API Status** - Live status indicator in the popover footer
-  - Fetches status from `status.claude.com` API (Statuspage)
+#### Codex System Status Indicator
+- **Real-time Codex API Status** - Live status indicator in the popover footer
+  - Fetches status from `status.codex.com` API (Statuspage)
   - Color-coded indicators: 🟢 Green (operational), 🟡 Yellow (minor), 🟠 Orange (major), 🔴 Red (critical), ⚪ Gray (unknown)
   - Displays current status description (e.g., "All Systems Operational")
-  - Clickable row opens status.claude.com for detailed information
+  - Clickable row opens status.codex.com for detailed information
   - Hover tooltip and subtle hover effect for better UX
   - 10-second timeout prevents UI blocking on slow connections
 
-- **New ClaudeStatusService** - Dedicated service for status monitoring
+- **New CodexStatusService** - Dedicated service for status monitoring
   - Async/await implementation with proper error handling
   - Automatic status refresh alongside usage data
   - Graceful fallback to "Status Unknown" on failures
 
-- **ClaudeStatus Model** - Type-safe status representation
+- **CodexStatus Model** - Type-safe status representation
   - `StatusIndicator` enum: none, minor, major, critical, unknown
   - `StatusColor` enum for consistent color mapping
   - Static factories for common states (.unknown, .operational)
@@ -1258,20 +1258,20 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 ### Technical Improvements
 
 - **MenuBarManager Enhancements**
-  - Added `@Published var status: ClaudeStatus` for reactive status updates
-  - Integrated `ClaudeStatusService` for parallel status fetching
+  - Added `@Published var status: CodexStatus` for reactive status updates
+  - Integrated `CodexStatusService` for parallel status fetching
   - `NSPopoverDelegate` implementation for detachable window support
   - `NSWindowDelegate` for proper window lifecycle management
   - Event monitor management for outside click detection
 
 - **PopoverContentView Updates**
-  - New `ClaudeStatusRow` component with hover effects
-  - `SmartFooter` now displays live Claude status
+  - New `CodexStatusRow` component with hover effects
+  - `SmartFooter` now displays live Codex status
   - Smooth animations for status transitions
 
 ### Contributors
 - [@hamed-elfayome](https://github.com/hamed-elfayome) (Hamed Elfayome) - Project creator and maintainer
-- [@ggfevans](https://github.com/ggfevans) - Claude status indicator, detachable popover, outside click fix, dynamic version, issue templates, contributing guide
+- [@ggfevans](https://github.com/ggfevans) - Codex status indicator, detachable popover, outside click fix, dynamic version, issue templates, contributing guide
 
 ---
 
@@ -1279,14 +1279,14 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 
 ### Added
 
-#### Claude Code Terminal Integration
-- **New Claude Code Settings Tab** - Dedicated UI for configuring terminal statusline integration
+#### Codex Code Terminal Integration
+- **New Codex Code Settings Tab** - Dedicated UI for configuring terminal statusline integration
   - Toggle individual components (directory, git branch, usage, progress bar)
   - Live preview showing exactly how your statusline will appear
   - One-click installation with automated script deployment
   - Visual component selection with clear descriptions
 
-- **Terminal Statusline Display** - Real-time usage monitoring directly in your Claude Code terminal
+- **Terminal Statusline Display** - Real-time usage monitoring directly in your Codex Code terminal
   - **Current Directory**: Shows working directory name with blue highlight
   - **Git Branch**: Live branch indicator with ⎇ icon (automatically detected)
   - **Usage Percentage**: Session usage with 10-level color gradient (green → yellow → orange → red)
@@ -1294,11 +1294,11 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - **Reset Time**: Countdown showing when your 5-hour session resets
   - **Format Example**: `my-project │ ⎇ main │ Usage: 25% ▓▓░░░░░░░░ → Reset: 3:45 PM`
 
-- **Automated Installation** - Scripts installed to `~/.claude/` directory
-  - `fetch-claude-usage.swift`: Swift script for fetching usage data from Claude API
+- **Automated Installation** - Scripts installed to `~/.codex/` directory
+  - `fetch-codex-usage.swift`: Swift script for fetching usage data from Codex API
   - `statusline-command.sh`: Bash script that builds the statusline display
   - `statusline-config.txt`: Configuration file storing component preferences
-  - Automatic updates to Claude Code's `settings.json`
+  - Automatic updates to Codex Code's `settings.json`
   - Secure file permissions (755) set automatically
 
 - **Smart Color Coding** - 10-level gradient provides visual feedback
@@ -1331,7 +1331,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
   - Ensures proper parsing by bash script
   - Prevents configuration read errors
 
-- **Conditional Cast Warning** - Removed redundant cast in `ClaudeAPIService.swift`
+- **Conditional Cast Warning** - Removed redundant cast in `CodexAPIService.swift`
   - Cleaned up overage data handling code
   - Improved code clarity
 
@@ -1340,10 +1340,10 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 
 ### Technical Improvements
 
-- Added `StatuslineService` for managing Claude Code integration
+- Added `StatuslineService` for managing Codex Code integration
   - Embedded Swift and Bash scripts for portability
   - File management and permission handling
-  - Claude Code settings.json integration
+  - Codex Code settings.json integration
   - Installation and configuration management
 
 - Enhanced `DataStore` with statusline preferences
@@ -1364,7 +1364,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 ### Documentation
 
 - **Comprehensive README Updates**
-  - New "Claude Code Integration" section with full setup guide
+  - New "Codex Code Integration" section with full setup guide
   - Component table with descriptions and examples
   - Color coding reference
   - Troubleshooting guide
@@ -1383,11 +1383,11 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 ### Added
 
 #### Extra Usage Cost Tracking
-- **Real-time cost monitoring** for Claude Extra usage (contributed by [@khromov](https://github.com/khromov))
+- **Real-time cost monitoring** for Codex Extra usage (contributed by [@khromov](https://github.com/khromov))
   - Displays current spending vs. budget limit (e.g., 15.38 / 25.00 EUR)
   - Visual progress indicator with percentage tracking
   - Seamlessly integrated below Weekly usage in the popover interface
-  - Automatically appears when Claude Extra usage is enabled on your account
+  - Automatically appears when Codex Extra usage is enabled on your account
 
 ### Contributors
 - [@khromov](https://github.com/khromov) (Stanislav Khromov) - Extra usage cost tracking feature
@@ -1401,7 +1401,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 #### Auto-Start Session Feature
 - **New Session Management Tab** in Settings with dedicated UI for session automation
 - **Auto-start session on reset** - Automatically initializes a new session when the current session hits 0%
-  - Sends a simple "Hi" message to Claude 3.5 Haiku (cheapest model)
+  - Sends a simple "Hi" message to Codex 3.5 Haiku (cheapest model)
   - Ensures you always have a fresh 5-hour session ready without manual intervention
   - Configurable toggle in Settings → Session
   - Detailed "How it works" section explaining the feature with visual icons
@@ -1424,7 +1424,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 
 #### Menu Bar Icon Visibility
 - **Appearance adaptation** - Menu bar icon now properly adapts to light/dark mode and wallpaper changes
-  - Icon outline and "Claude" text now render in appropriate colors (black on light, white on dark)
+  - Icon outline and "Codex" text now render in appropriate colors (black on light, white on dark)
   - Keeps colored progress indicator (green/orange/red) for status visibility
   - Real-time updates when system appearance changes
   - No need to restart the app when switching themes
@@ -1448,7 +1448,7 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 
 ### Added
 - Initial release
-- Real-time Claude usage monitoring (session, weekly, and Opus-specific)
+- Real-time Codex usage monitoring (session, weekly, and Opus-specific)
 - Menu bar integration with battery-style progress indicator
 - Smart notifications at usage thresholds (75%, 90%, 95%)
 - Session reset notifications
@@ -1459,21 +1459,21 @@ This major release represents a significant milestone for Claude Usage Tracker, 
 - Detailed usage dashboard with countdown timers
 - Support for macOS 14.0+ (Sonoma and later)
 
-[2.3.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.3...v2.3.0
-[2.2.3]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.2...v2.2.3
-[2.2.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.1...v2.2.2
-[2.2.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.2.0...v2.2.1
-[2.2.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.1.2...v2.2.0
-[2.1.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.1.1...v2.1.2
-[2.1.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.1.0...v2.1.1
-[2.1.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.6.2...v2.0.0
-[1.6.2]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.6.1...v1.6.2
-[1.6.1]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.6.0...v1.6.1
-[1.6.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.5.0...v1.6.0
-[1.5.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.4.0...v1.5.0
-[1.4.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.3.0...v1.4.0
-[1.3.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/tag/v1.0.0
+[2.3.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.2.3...v2.3.0
+[2.2.3]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.2.2...v2.2.3
+[2.2.2]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.2.1...v2.2.2
+[2.2.1]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.1.2...v2.2.0
+[2.1.2]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.1.1...v2.1.2
+[2.1.1]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.6.2...v2.0.0
+[1.6.2]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.6.1...v1.6.2
+[1.6.1]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.6.0...v1.6.1
+[1.6.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases/tag/v1.0.0

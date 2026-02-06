@@ -1,6 +1,6 @@
-# Contributing to Claude Usage Tracker
+# Contributing to Codex Usage Tracker
 
-First off, thank you for considering contributing to Claude Usage Tracker! 🎉
+First off, thank you for considering contributing to Codex Usage Tracker! 🎉
 
 This document provides guidelines and information about contributing to this project. We welcome contributions of all kinds: bug reports, feature requests, documentation improvements, and code contributions.
 
@@ -44,7 +44,7 @@ Before you begin, ensure you have the following installed:
 - **macOS 14.0+** (Sonoma or later)
 - **Xcode 15.0+** (latest stable recommended)
 - **Git** for version control
-- **A Claude AI account** for testing (to obtain a session key)
+- **A Codex AI account** for testing (to obtain a session key)
 
 ### Development Setup
 
@@ -54,36 +54,36 @@ Before you begin, ensure you have the following installed:
 
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Claude-Usage-Tracker.git
-   cd Claude-Usage-Tracker
+   git clone https://github.com/YOUR_USERNAME/Codex-Usage-Tracker.git
+   cd Codex-Usage-Tracker
    ```
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/hamed-elfayome/Claude-Usage-Tracker.git
+   git remote add upstream https://github.com/hamed-elfayome/Codex-Usage-Tracker.git
    ```
 
 4. **Open in Xcode**
    ```bash
-   open "Claude Usage.xcodeproj"
+   open "Codex Usage.xcodeproj"
    ```
 
 5. **Build and run**
-   - Select the "Claude Usage" scheme
+   - Select the "Codex Usage" scheme
    - Press `⌘R` to build and run
    - The app will appear in your menu bar
 
 6. **Configure for testing**
-   - Extract your session key from claude.ai (see README for instructions)
+   - Extract your session key from codex.ai (see README for instructions)
    - The app will guide you through setup on first launch
 
 ### Project Structure
 
 ```
-Claude Usage/
+Codex Usage/
 ├── App/
 │   ├── AppDelegate.swift          # App lifecycle, notifications setup
-│   └── ClaudeUsageTrackerApp.swift # SwiftUI app entry point
+│   └── CodexUsageTrackerApp.swift # SwiftUI app entry point
 │
 ├── MenuBar/
 │   ├── MenuBarManager.swift       # Status item, popover management
@@ -96,13 +96,13 @@ Claude Usage/
 ├── Shared/
 │   ├── Extensions/                # Date, UserDefaults extensions
 │   ├── Models/
-│   │   ├── ClaudeUsage.swift      # Usage data model
-│   │   └── ClaudeStatus.swift     # API status model
+│   │   ├── CodexUsage.swift      # Usage data model
+│   │   └── CodexStatus.swift     # API status model
 │   ├── Services/
-│   │   ├── ClaudeAPIService.swift # API communication
-│   │   ├── ClaudeStatusService.swift
+│   │   ├── CodexAPIService.swift # API communication
+│   │   ├── CodexStatusService.swift
 │   │   ├── NotificationManager.swift
-│   │   └── StatuslineService.swift # Claude Code integration
+│   │   └── StatuslineService.swift # Codex Code integration
 │   ├── Storage/
 │   │   └── DataStore.swift        # UserDefaults wrapper
 │   └── Utilities/
@@ -119,7 +119,7 @@ Claude Usage/
 ### Reporting Bugs
 
 Before submitting a bug report:
-1. Check existing [issues](https://github.com/hamed-elfayome/Claude-Usage-Tracker/issues) to avoid duplicates
+1. Check existing [issues](https://github.com/hamed-elfayome/Codex-Usage-Tracker/issues) to avoid duplicates
 2. Ensure you're running the latest version
 
 **When reporting a bug, include:**
@@ -128,7 +128,7 @@ Before submitting a bug report:
 - Steps to reproduce the issue
 - Expected behavior vs. actual behavior
 - Screenshots if applicable
-- Relevant Console.app logs (filter by "Claude Usage")
+- Relevant Console.app logs (filter by "Codex Usage")
 
 ### Suggesting Features
 
@@ -163,21 +163,21 @@ We follow [Swift API Design Guidelines](https://www.swift.org/documentation/api-
 // MARK: - Private Methods
 
 // Use descriptive names
-func fetchUsageData() async throws -> ClaudeUsage  // ✅ Good
-func getData() async throws -> ClaudeUsage         // ❌ Avoid
+func fetchUsageData() async throws -> CodexUsage  // ✅ Good
+func getData() async throws -> CodexUsage         // ❌ Avoid
 
 // Document public APIs
-/// Fetches the current usage data from Claude's API
-/// - Returns: A `ClaudeUsage` object with current session and weekly usage
+/// Fetches the current usage data from Codex's API
+/// - Returns: A `CodexUsage` object with current session and weekly usage
 /// - Throws: `APIError` if the request fails
-func fetchUsageData() async throws -> ClaudeUsage
+func fetchUsageData() async throws -> CodexUsage
 
 // Use Swift's type inference where clear
-let usage = ClaudeUsage.empty    // ✅ Good
-let usage: ClaudeUsage = ClaudeUsage.empty  // ❌ Redundant
+let usage = CodexUsage.empty    // ✅ Good
+let usage: CodexUsage = CodexUsage.empty  // ❌ Redundant
 
 // Prefer structs for data models
-struct ClaudeUsage: Codable, Equatable { ... }
+struct CodexUsage: Codable, Equatable { ... }
 
 // Use enums for constants and configurations
 enum Constants {
@@ -251,7 +251,7 @@ feat(api): add support for Opus weekly usage tracking
 
 fix(menubar): resolve icon not updating on appearance change
 
-docs(readme): add Claude Code statusline setup instructions
+docs(readme): add Codex Code statusline setup instructions
 
 refactor(services): extract notification logic to NotificationManager
 ```
@@ -338,8 +338,8 @@ git push origin main --tags
 
 ## Getting Help
 
-- **Questions?** Open a [Discussion](https://github.com/hamed-elfayome/Claude-Usage-Tracker/discussions)
-- **Found a bug?** Open an [Issue](https://github.com/hamed-elfayome/Claude-Usage-Tracker/issues)
+- **Questions?** Open a [Discussion](https://github.com/hamed-elfayome/Codex-Usage-Tracker/discussions)
+- **Found a bug?** Open an [Issue](https://github.com/hamed-elfayome/Codex-Usage-Tracker/issues)
 - **Want to chat?** Reach out to maintainers
 
 ---
@@ -351,4 +351,4 @@ Contributors are recognized in:
 - Release notes for significant contributions
 - README acknowledgments for major features
 
-Thank you for helping make Claude Usage Tracker better! 🙏
+Thank you for helping make Codex Usage Tracker better! 🙏

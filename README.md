@@ -1,4 +1,4 @@
-# Claude Usage Tracker
+# Codex Usage Tracker
 
 > Fork note (Codex CLI adaptation): this fork adds a local Codex CLI usage backend and menu bar integration via `~/.codex/usage_tracker/latest_snapshot.json`.
 >
@@ -16,9 +16,9 @@
 > Tracker docs: [`codex_usage_tracker/README.md`](codex_usage_tracker/README.md)
 >
 <div align="center">
-  <img src=".github/cover.jpg" alt="Claude Usage Tracker" width="100%">
+  <img src=".github/cover.jpg" alt="Codex Usage Tracker" width="100%">
 
-  **A native macOS menu bar application for real-time monitoring of Claude AI usage limits**
+  **A native macOS menu bar application for real-time monitoring of Codex AI usage limits**
 
   ![macOS](https://img.shields.io/badge/macOS-14.0+-black?style=flat-square&logo=apple)
   ![Swift](https://img.shields.io/badge/Swift-5.0+-orange?style=flat-square&logo=swift)
@@ -29,7 +29,7 @@
 
   <sub>🇬🇧 English • 🇪🇸 Español • 🇫🇷 Français • 🇩🇪 Deutsch • 🇮🇹 Italiano • 🇵🇹 Português • 🇯🇵 日本語 • 🇰🇷 한국어</sub>
 
-  ### [Download Latest Release (v2.3.0)](https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/latest/download/Claude-Usage.zip)
+  ### [Download Latest Release (v2.3.0)](https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases/latest/download/Codex-Usage.zip)
 
   <sub>macOS 14.0+ (Sonoma) | ~4 MB | Native Swift/SwiftUI | Officially Signed</sub>
 
@@ -40,13 +40,13 @@
 
 ## Overview
 
-Claude Usage Tracker is a lightweight, native macOS menu bar application that provides real-time monitoring of your Claude AI usage limits. Built entirely with Swift and SwiftUI, it offers a clean, intuitive interface to track your 5-hour session window, weekly usage limits, and Opus-specific consumption.
+Codex Usage Tracker is a lightweight, native macOS menu bar application that provides real-time monitoring of your Codex AI usage limits. Built entirely with Swift and SwiftUI, it offers a clean, intuitive interface to track your 5-hour session window, weekly usage limits, and Opus-specific consumption.
 
 ### Key Capabilities
 
-- **Multi-Profile Support**: Manage unlimited Claude accounts with isolated credentials and settings
+- **Multi-Profile Support**: Manage unlimited Codex accounts with isolated credentials and settings
 - **Multi-Profile Display**: Monitor all profiles simultaneously in the menu bar (NEW in v2.3.0)
-- **Claude Code Integration**: Sync CLI accounts and auto-switch credentials when changing profiles
+- **Codex Code Integration**: Sync CLI accounts and auto-switch credentials when changing profiles
 - **Real-Time Monitoring**: Track session, weekly, and API console usage per profile
 - **Customizable Interface**: 5 icon styles + monochrome mode + remaining/used percentage toggle
 - **Smart Automation**: Auto-start sessions (per-profile background service), threshold notifications
@@ -60,7 +60,7 @@ Claude Usage Tracker is a lightweight, native macOS menu bar application that pr
 
   <sub>Menu bar icon and detailed usage popover</sub>
 
-  <img src=".github/statusline.png" alt="Claude Code Statusline">
+  <img src=".github/statusline.png" alt="Codex Code Statusline">
   <br>
   <sub>Live terminal statusline showing directory, branch, and color-coded usage</sub>
 </div>
@@ -70,7 +70,7 @@ Claude Usage Tracker is a lightweight, native macOS menu bar application that pr
 ## What's New
 
 - **v2.3.0 - Multi-Profile Menu Bar Display (2026-01-23)**:
-  - **Multi-profile menu bar display**: Monitor all your Claude accounts simultaneously in the menu bar
+  - **Multi-profile menu bar display**: Monitor all your Codex accounts simultaneously in the menu bar
   - **Remaining vs. used percentage**: Choose to display remaining budget instead of used percentage
   - **Unified usage calculations**: Centralized logic with intelligent color adaptation
   - **Enhanced icon rendering**: Per-profile icons with independent styling and settings
@@ -91,53 +91,53 @@ Claude Usage Tracker is a lightweight, native macOS menu bar application that pr
 
 ### Prerequisites
 
-Before installing Claude Usage Tracker, ensure you have:
+Before installing Codex Usage Tracker, ensure you have:
 
 - **macOS 14.0 (Sonoma) or later** - Check: Apple menu → About This Mac
-- **Active Claude AI account** - Sign up at [claude.ai](https://claude.ai)
+- **Active Codex AI account** - Sign up at [codex.ai](https://codex.ai)
 
 **Authentication** (choose one method):
-- **Easiest**: [Claude Code](https://claude.com/claude-code) installed and logged in - App automatically uses CLI credentials (v2.2.2+)
-- **Manual**: Web browser access to extract session key from claude.ai (Chrome, Safari, Firefox, etc.)
+- **Easiest**: [Codex Code](https://codex.com/codex-code) installed and logged in - App automatically uses CLI credentials (v2.2.2+)
+- **Manual**: Web browser access to extract session key from codex.ai (Chrome, Safari, Firefox, etc.)
 
-**Note**: For terminal statusline integration, you'll still need to manually configure a session key even if using Claude Code OAuth
+**Note**: For terminal statusline integration, you'll still need to manually configure a session key even if using Codex Code OAuth
 
 ### Installation
 
 #### Option 1: Homebrew (Recommended)
 
 ```bash
-brew install --cask hamed-elfayome/claude-usage/claude-usage-tracker
+brew install --cask hamed-elfayome/codex-usage/codex-usage-tracker
 ```
 
 Or tap first, then install:
 
 ```bash
-brew tap hamed-elfayome/claude-usage
-brew install --cask claude-usage-tracker
+brew tap hamed-elfayome/codex-usage
+brew install --cask codex-usage-tracker
 ```
 
 **Note**: Starting with v2.0.0, the app is officially signed with an Apple Developer certificate. No security workarounds needed!
 
 **To update**:
 ```bash
-brew upgrade --cask claude-usage-tracker
+brew upgrade --cask codex-usage-tracker
 ```
 
 Or use the built-in automatic update feature (Settings → Updates).
 
 **To uninstall**:
 ```bash
-brew uninstall --cask claude-usage-tracker
+brew uninstall --cask codex-usage-tracker
 ```
 
 #### Option 2: Direct Download
 
-**[Download Claude-Usage.zip](https://github.com/hamed-elfayome/Claude-Usage-Tracker/releases/latest/download/Claude-Usage.zip)**
+**[Download Codex-Usage.zip](https://github.com/hamed-elfayome/Codex-Usage-Tracker/releases/latest/download/Codex-Usage.zip)**
 
 1. Download the `.zip` file from the link above
 2. Extract the zip file (double-click or use Archive Utility)
-3. Drag `Claude Usage.app` to your Applications folder
+3. Drag `Codex Usage.app` to your Applications folder
 4. Double-click to launch - that's it!
 
 **v2.0.0+ Note**: The app is now officially signed with an Apple Developer certificate. You can install and run it like any other Mac application - no security warnings or workarounds needed.
@@ -148,27 +148,27 @@ brew uninstall --cask claude-usage-tracker
 
 ```bash
 # Clone the repository
-git clone https://github.com/alexbartok/Claude-Usage-Tracker.git
-cd Claude-Usage-Tracker
+git clone https://github.com/alexbartok/Codex-Usage-Tracker.git
+cd Codex-Usage-Tracker
 
 # Open in Xcode
-open "Claude Usage.xcodeproj"
+open "Codex Usage.xcodeproj"
 
 # Build and run (⌘R)
 ```
 
 ### Quick Start Guide
 
-#### Option A: Automatic Setup with Claude Code (Easiest)
+#### Option A: Automatic Setup with Codex Code (Easiest)
 
-**New in v2.2.2**: If you have Claude Code installed and logged in, the app works automatically!
+**New in v2.2.2**: If you have Codex Code installed and logged in, the app works automatically!
 
-1. **Install Claude Code** (if not already installed)
-   - Download from [claude.com/claude-code](https://claude.com/claude-code)
-   - Log in using `claude login`
+1. **Install Codex Code** (if not already installed)
+   - Download from [codex.com/codex-code](https://codex.com/codex-code)
+   - Log in using `codex login`
 
-2. **Launch Claude Usage Tracker**
-   - The app automatically detects your Claude Code Account
+2. **Launch Codex Usage Tracker**
+   - The app automatically detects your Codex Code Account
    - No manual configuration needed!
 
 3. **Verify It's Working**
@@ -177,12 +177,12 @@ open "Claude Usage.xcodeproj"
 
 #### Option B: Manual Setup with Session Key
 
-If you prefer manual configuration or don't use Claude Code:
+If you prefer manual configuration or don't use Codex Code:
 
 **Step 1: Extract Your Session Key**
 
-1. **Open Claude AI**
-   - Navigate to [claude.ai](https://claude.ai) in your browser
+1. **Open Codex AI**
+   - Navigate to [codex.ai](https://codex.ai) in your browser
    - Make sure you're logged in
 
 2. **Open Developer Tools**
@@ -192,7 +192,7 @@ If you prefer manual configuration or don't use Claude Code:
 
 3. **Navigate to Cookies**
    - Go to: **Application** tab (Chrome/Edge) or **Storage** tab (Firefox)
-   - Expand: **Cookies** → **https://claude.ai**
+   - Expand: **Cookies** → **https://codex.ai**
    - Find: `sessionKey` cookie
    - Copy: The value (starts with `sk-ant-sid01-...`)
 
@@ -202,17 +202,17 @@ If you prefer manual configuration or don't use Claude Code:
 2. **Navigate to "Personal Usage"** tab
 3. **3-Step Wizard** guides you through setup:
    - **Step 1**: Paste your session key and click "Test Connection"
-   - **Step 2**: Select your Claude organization from the list
+   - **Step 2**: Select your Codex organization from the list
    - **Step 3**: Review and click "Save Configuration"
 4. **Wait for confirmation** (success message appears)
 
 **Step 3: Verify It's Working**
 
-1. **Check Menu Bar**: You should see the Claude Usage icon in your menu bar
+1. **Check Menu Bar**: You should see the Codex Usage icon in your menu bar
 2. **Click the Icon**: Popover appears showing your usage statistics
 3. **View Data**: Session usage, weekly usage, and reset timers should display
 
-**Success!** The app is now monitoring your Claude usage.
+**Success!** The app is now monitoring your Codex usage.
 
 #### Next Steps
 
@@ -220,7 +220,7 @@ If you prefer manual configuration or don't use Claude Code:
 - **Su**: Go to Settings → Appearance to choose your preferred menu bar style
 - **Enable Notifications**: Settings → Notifications to get threshold alerts
 - **Auto-Start Sessions**: Settings → Session Management to enable automatic session initialization
-- **Terminal Integration**: Settings → Claude Code to set up statusline (requires session key configuration)
+- **Terminal Integration**: Settings → Codex Code to set up statusline (requires session key configuration)
 
 ---
 
@@ -232,10 +232,10 @@ If you prefer to configure the session key manually instead of using the setup w
 
 ```bash
 # Create session key file
-echo "sk-ant-sid01-YOUR_SESSION_KEY_HERE" > ~/.claude-session-key
+echo "sk-ant-sid01-YOUR_SESSION_KEY_HERE" > ~/.codex-session-key
 
 # Set secure permissions (important for security)
-chmod 600 ~/.claude-session-key
+chmod 600 ~/.codex-session-key
 ```
 
 After creating the file, launch the app and it will automatically detect the session key.
@@ -244,14 +244,14 @@ After creating the file, launch the app and it will automatically detect the ses
 
 ## Multi-Profile Management
 
-**New in v2.2.0**: Claude Usage Tracker now supports unlimited profiles, allowing you to manage multiple Claude accounts seamlessly with automatic credential switching.
+**New in v2.2.0**: Codex Usage Tracker now supports unlimited profiles, allowing you to manage multiple Codex accounts seamlessly with automatic credential switching.
 
 **New in v2.3.0**: Multi-profile menu bar display lets you monitor all your profiles simultaneously!
 
 ### Features
 
 #### Profile Management
-- **Unlimited Profiles**: Create as many profiles as needed for different Claude accounts
+- **Unlimited Profiles**: Create as many profiles as needed for different Codex accounts
 - **Multi-Profile Display**: Show all profiles in the menu bar at once (v2.3.0)
   - Toggle between Single mode (active profile only) and Multi mode (all profiles)
   - Each profile displays with its own icon style and settings
@@ -260,18 +260,18 @@ After creating the file, launch the app and it will automatically detect the ses
 - **Fun Auto-Names**: Profiles auto-generate with names like "Quantum Llama", "Sneaky Penguin", "Turbo Sloth"
 - **Custom Names**: Rename profiles to whatever you prefer
 - **Quick Switching**: Switch profiles instantly via popover dropdown or settings sidebar
-- **Profile Badges**: Visual indicators show which profiles have Claude.ai credentials and CLI accounts
+- **Profile Badges**: Visual indicators show which profiles have Codex.ai credentials and CLI accounts
 
-#### Claude Code CLI Integration
-- **One-Click Sync**: Sync your currently logged-in Claude Code account to a profile
+#### Codex Code CLI Integration
+- **One-Click Sync**: Sync your currently logged-in Codex Code account to a profile
 - **Automatic Switching**: When you switch profiles, CLI credentials automatically update
 - **Credential Display**: View masked access tokens and subscription type
 - **Smart Re-Sync**: Credentials automatically refresh before profile switches to capture CLI changes
-- **Per-Profile CLI**: Each profile can have its own Claude Code account or share the system account
+- **Per-Profile CLI**: Each profile can have its own Codex Code account or share the system account
 
 #### Per-Profile Settings
 Each profile has isolated settings:
-- **Credentials**: Separate Claude.ai session keys, API keys, and organization IDs
+- **Credentials**: Separate Codex.ai session keys, API keys, and organization IDs
 - **Appearance**: Independent icon styles and monochrome mode
 - **Refresh Interval**: Custom refresh rates (5-300 seconds)
 - **Auto-Start Sessions**: Enable/disable per profile
@@ -293,13 +293,13 @@ Access profile switcher in multiple places:
 
 2. **Configure Credentials**:
    - Switch to desired profile in sidebar
-   - Go to Claude.AI / API Console / CLI Account tabs
+   - Go to Codex.AI / API Console / CLI Account tabs
    - Enter credentials (isolated per profile)
 
-3. **Sync Claude Code** (Optional):
-   - Log in to Claude Code in terminal
+3. **Sync Codex Code** (Optional):
+   - Log in to Codex Code in terminal
    - Open Settings → CLI Account
-   - Click "Sync from Claude Code"
+   - Click "Sync from Codex Code"
    - Now when you switch profiles, CLI credentials auto-update!
 
 4. **Switch Profiles**:
@@ -321,7 +321,7 @@ Access profile switcher in multiple places:
 ### Usage Tracking & Monitoring
 - Real-time monitoring of 5-hour session, weekly limits, and Opus-specific usage
 - API console usage tracking for comprehensive visibility
-- Extra usage cost tracking for Claude Extra subscribers
+- Extra usage cost tracking for Codex Extra subscribers
 - Color-coded indicators (green/orange/red) based on consumption levels
 - Smart countdown timers for session and weekly resets
 
@@ -330,7 +330,7 @@ Access profile switcher in multiple places:
 - **Multi-Metric Icons**: Display separate icons for session, weekly, and api usage simultaneously
 - **Monochrome Mode**: Optional black & white aesthetic
 - **Interactive Popover**: One-click access with detachable floating window capability
-- **Live Status Indicator**: Real-time Claude system status from status.claude.com
+- **Live Status Indicator**: Real-time Codex system status from status.codex.com
 - **Multi-Language Support**: 6 languages (English, Spanish, French, German, Italian, Portuguese)
 - Adaptive colors for light/dark mode
 
@@ -343,7 +343,7 @@ Access profile switcher in multiple places:
 - Session reset and auto-start confirmations
 
 ### Developer Integration
-- **Claude Code Terminal Statusline**: Real-time usage in your terminal
+- **Codex Code Terminal Statusline**: Real-time usage in your terminal
 - Customizable components: directory, git branch, usage percentage, progress bar, reset timer
 - One-click automated installation
 - Live preview before applying changes
@@ -356,7 +356,7 @@ Access profile switcher in multiple places:
 - **Robust Validation**: Session key and API endpoint validation
 - Local storage with no cloud sync
 - Zero telemetry or tracking
-- HTTPS-only communication with Claude API
+- HTTPS-only communication with Codex API
 
 ### Advanced Capabilities
 - Multi-screen support
@@ -386,17 +386,17 @@ Access comprehensive settings through the menu bar popover → Settings button. 
 
 #### Profile Switcher (Sidebar)
 - **Quick Profile Selection**: Dropdown to switch between profiles instantly
-- **Profile Badges**: Visual indicators for Claude.ai 🔵 and CLI ✅ credentials
+- **Profile Badges**: Visual indicators for Codex.ai 🔵 and CLI ✅ credentials
 - **Active Profile Display**: Shows currently selected profile
 
-#### Claude.AI (Credentials)
-Configure your Claude.ai personal account:
+#### Codex.AI (Credentials)
+Configure your Codex.ai personal account:
 - **3-Step Setup Wizard**: Guided session key configuration
   - Non-destructive connection testing
   - Visual organization selector
   - Configuration summary with preview
 - **Smart Updates**: Organization preserved when re-entering same key
-- **Quick Access**: One-click link to claude.ai
+- **Quick Access**: One-click link to codex.ai
 
 #### API Console (Credentials)
 Configure API console usage tracking:
@@ -406,8 +406,8 @@ Configure API console usage tracking:
 - **API Billing**: View API console usage costs
 
 #### CLI Account (Credentials)
-Sync Claude Code CLI credentials:
-- **One-Click Sync**: Copy currently logged-in Claude Code account to profile
+Sync Codex Code CLI credentials:
+- **One-Click Sync**: Copy currently logged-in Codex Code account to profile
 - **Credential Display**: View masked access token and subscription type
 - **Auto-Switch**: Credentials automatically update when changing profiles
 - **Remove Sync**: Unlink CLI account from profile
@@ -418,7 +418,7 @@ Customize menu bar icon per profile:
   - Battery Style (classic indicator with fill)
   - Progress Bar (horizontal bar with percentage)
   - Percentage Only (text-only minimalist)
-  - Icon with Bar (Claude icon + progress)
+  - Icon with Bar (Codex icon + progress)
   - Compact (space-efficient)
 - **Monochrome Mode**: Toggle black & white icon style
 - **Percentage Display Mode** (NEW in v2.3.0): Toggle between used/remaining percentage
@@ -452,13 +452,13 @@ Application language preferences:
 - **Live Updates**: Interface updates immediately when language changes
 - Supported: English, Spanish, French, German, Italian, Portuguese, Japanese, Korean
 
-#### Claude Code (Statusline)
+#### Codex Code (Statusline)
 Terminal integration (app-wide):
 - **Component Selection**: Choose what to display (directory, branch, usage, progress bar, reset time)
 - **Live Preview**: See exact statusline format before installing
-- **One-Click Install**: Automated script installation to `~/.claude/`
+- **One-Click Install**: Automated script installation to `~/.codex/`
 - **Automatic Updates**: Statusline updates when switching profiles
-- See [Claude Code Integration](#claude-code-integration) section for detailed setup
+- See [Codex Code Integration](#codex-code-integration) section for detailed setup
 
 #### Updates
 Automatic update configuration:
@@ -474,16 +474,16 @@ Application information:
 - **Links**: GitHub repository, issue tracker, documentation
 
 
-## Claude Code Integration
+## Codex Code Integration
 
-Bring real-time Claude usage monitoring directly into your terminal with Claude Code statusline integration! Display your current usage percentage, git branch, and working directory without leaving your development workflow.
+Bring real-time Codex usage monitoring directly into your terminal with Codex Code statusline integration! Display your current usage percentage, git branch, and working directory without leaving your development workflow.
 
-### What is Claude Code?
+### What is Codex Code?
 
-[Claude Code](https://claude.com/claude-code) is Anthropic's official CLI tool for interacting with Claude AI directly from your terminal. The statusline feature allows you to display custom information at the bottom of your terminal window.
+[Codex Code](https://codex.com/codex-code) is Anthropic's official CLI tool for interacting with Codex AI directly from your terminal. The statusline feature allows you to display custom information at the bottom of your terminal window.
 
 <div align="center">
-  <img src=".github/statusline.png" alt="Claude Code Statusline in Action" width="90%">
+  <img src=".github/statusline.png" alt="Codex Code Statusline in Action" width="90%">
   <br>
   <sub>Example: Terminal statusline with all components enabled</sub>
 </div>
@@ -492,15 +492,15 @@ Bring real-time Claude usage monitoring directly into your terminal with Claude 
 
 #### Prerequisites
 
-1. **Claude Code installed**: Download from [claude.com/claude-code](https://claude.com/claude-code)
-2. **Session key configured**: Must be manually configured in the Personal Usage tab (Claude Code OAuth doesn't work for statusline - it requires direct session key)
+1. **Codex Code installed**: Download from [codex.com/codex-code](https://codex.com/codex-code)
+2. **Session key configured**: Must be manually configured in the Personal Usage tab (Codex Code OAuth doesn't work for statusline - it requires direct session key)
 
 #### Installation Steps
 
-1. **Open Claude Usage Tracker Settings**
+1. **Open Codex Usage Tracker Settings**
    - Click the menu bar icon
    - Click "Settings"
-   - Navigate to the "Claude Code" tab
+   - Navigate to the "Codex Code" tab
 
 2. **Choose Your Components**
    - Toggle on/off the components you want to see:
@@ -511,25 +511,25 @@ Bring real-time Claude usage monitoring directly into your terminal with Claude 
 
 3. **Preview Your Statusline**
    - The live preview shows exactly how it will appear
-   - Example: `claude-usage │ ⎇ main │ Usage: 25% ▓▓░░░░░░░░`
+   - Example: `codex-usage │ ⎇ main │ Usage: 25% ▓▓░░░░░░░░`
 
 4. **Apply Configuration**
    - Click "Apply" button
-   - Scripts will be installed to `~/.claude/`
-   - Claude Code's `settings.json` will be updated automatically
+   - Scripts will be installed to `~/.codex/`
+   - Codex Code's `settings.json` will be updated automatically
 
-5. **Restart Claude Code**
-   - Close and reopen your Claude Code terminal
+5. **Restart Codex Code**
+   - Close and reopen your Codex Code terminal
    - The statusline will appear at the bottom of your terminal window
 
 ### What Gets Installed
 
 The setup automatically creates:
 
-- `~/.claude/fetch-claude-usage.swift`: Swift script that fetches usage data from Claude API
-- `~/.claude/statusline-command.sh`: Bash script that builds the statusline display
-- `~/.claude/statusline-config.txt`: Configuration file with your component preferences
-- `~/.claude/settings.json`: Updated with statusline command (or created if doesn't exist)
+- `~/.codex/fetch-codex-usage.swift`: Swift script that fetches usage data from Codex API
+- `~/.codex/statusline-command.sh`: Bash script that builds the statusline display
+- `~/.codex/statusline-config.txt`: Configuration file with your component preferences
+- `~/.codex/settings.json`: Updated with statusline command (or created if doesn't exist)
 
 All scripts are set with secure permissions (755) and only read your existing session key file.
 
@@ -539,7 +539,7 @@ All scripts are set with secure permissions (755) and only read your existing se
 
 | Component | Description | Example |
 |-----------|-------------|---------|
-| Directory | Current directory name | `claude-usage` |
+| Directory | Current directory name | `codex-usage` |
 | Git Branch | Active git branch | `⎇ main` |
 | Usage | Session percentage | `Usage: 25%` |
 | Progress Bar | 10-segment visual indicator | `▓▓░░░░░░░░` |
@@ -558,9 +558,9 @@ Usage percentage is color-coded with a 10-level gradient:
 #### Disabling Statusline
 
 To remove the statusline:
-1. Open Claude Usage Tracker Settings → Claude Code tab
+1. Open Codex Usage Tracker Settings → Codex Code tab
 2. Click "Reset" button
-3. Restart Claude Code
+3. Restart Codex Code
 
 This removes the statusline configuration but keeps the scripts installed for easy re-enabling.
 
@@ -568,25 +568,25 @@ This removes the statusline configuration but keeps the scripts installed for ea
 
 #### Statusline Not Appearing
 
-1. Verify Claude Code is installed and working
-2. Check that you restarted Claude Code after applying
+1. Verify Codex Code is installed and working
+2. Check that you restarted Codex Code after applying
 3. Ensure session key is valid in General settings tab
-4. Check that `~/.claude/settings.json` exists and has the statusline configuration
+4. Check that `~/.codex/settings.json` exists and has the statusline configuration
 
 #### Shows "Usage: ~"
 
 This indicates the Swift script couldn't fetch usage data:
 - Verify your session key is valid
-- Check that `~/.claude-session-key` exists
+- Check that `~/.codex-session-key` exists
 - Ensure you're connected to the internet
-- Try refreshing your session key from claude.ai
+- Try refreshing your session key from codex.ai
 
 #### Permission Issues
 
 If scripts can't be executed:
 ```bash
-chmod 755 ~/.claude/fetch-claude-usage.swift
-chmod 755 ~/.claude/statusline-command.sh
+chmod 755 ~/.codex/fetch-codex-usage.swift
+chmod 755 ~/.codex/statusline-command.sh
 ```
 
 ### Example Statuslines
@@ -620,15 +620,15 @@ backend-api │ ⎇ develop
 
 ## API Integration
 
-The application integrates with multiple Claude API endpoints for comprehensive usage tracking:
+The application integrates with multiple Codex API endpoints for comprehensive usage tracking:
 
 ### Web Usage Endpoint
 
 ```
-GET https://claude.ai/api/organizations/{org_id}/usage
+GET https://codex.ai/api/organizations/{org_id}/usage
 ```
 
-**Authentication**: Session cookie (`sessionKey`) from claude.ai
+**Authentication**: Session cookie (`sessionKey`) from codex.ai
 
 **Response Structure**:
 - `five_hour`: 5-hour session usage data
@@ -638,7 +638,7 @@ GET https://claude.ai/api/organizations/{org_id}/usage
   - `utilization_pct`: Weekly usage percentage
 - `seven_day_opus`: Opus-specific weekly usage
   - `utilization_pct`: Opus weekly percentage
-- `extra_usage`: Claude Extra cost tracking (if applicable)
+- `extra_usage`: Codex Extra cost tracking (if applicable)
   - `current_spending`: Amount spent
   - `budget_limit`: Maximum allowed spending
 
@@ -657,7 +657,7 @@ GET https://api.anthropic.com/v1/organization/{org_id}/usage
 
 ### Dual Tracking
 
-The app can simultaneously monitor both web (claude.ai) and API console usage, providing complete visibility into your Claude consumption across all access methods.
+The app can simultaneously monitor both web (codex.ai) and API console usage, providing complete visibility into your Codex consumption across all access methods.
 
 ## Security
 
@@ -669,14 +669,14 @@ The app can simultaneously monitor both web (claude.ai) and API console usage, p
 - **No Telemetry**: Zero tracking or analytics
 - **Advanced Error Handling**: Robust error system with user-friendly recovery
 - **Session Key Validation**: Comprehensive validation of API credentials
-- **Network**: HTTPS-only communication with claude.ai and Anthropic API
+- **Network**: HTTPS-only communication with codex.ai and Anthropic API
 
 ## Troubleshooting
 
 ### Application Not Connecting
 
 1. Verify your session key is valid
-2. Check that you're logged into claude.ai in your browser
+2. Check that you're logged into codex.ai in your browser
 3. Try extracting a fresh session key
 4. Ensure you have an active internet connection
 
@@ -705,7 +705,7 @@ If icons briefly flash to zero during refresh:
 
 ### Session Key Expired
 
-Session keys may expire after a period of time. Extract a new key from claude.ai and update it in Settings → Personal Usage using the wizard.
+Session keys may expire after a period of time. Extract a new key from codex.ai and update it in Settings → Personal Usage using the wizard.
 
 ### Updates Not Working
 
@@ -718,7 +718,7 @@ If automatic updates aren't working:
 
 ## Contributors
 
-<img src="https://contrib.rocks/image?repo=hamed-elfayome/Claude-Usage-Tracker" alt="Contributors" height="30px" />
+<img src="https://contrib.rocks/image?repo=hamed-elfayome/Codex-Usage-Tracker" alt="Contributors" height="30px" />
 
 This project is built for the community — everyone is welcome
 
@@ -750,19 +750,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with Swift and SwiftUI
 - Designed for macOS Sonoma and later
-- Uses Claude AI's usage API
+- Uses Codex AI's usage API
 - Inspired by the need for better usage visibility
 
 ## Disclaimer
 
-This application is not affiliated with, endorsed by, or sponsored by Anthropic PBC. Claude is a trademark of Anthropic PBC. This is an independent third-party tool created for personal usage monitoring.
+This application is not affiliated with, endorsed by, or sponsored by Anthropic PBC. Codex is a trademark of Anthropic PBC. This is an independent third-party tool created for personal usage monitoring.
 
 ## AI Transparency
 
-This project is developed using AI-assisted workflows (primarily Claude Code via Happy). We believe in transparent collaboration between human developers and AI tools.
+This project is developed using AI-assisted workflows (primarily Codex Code via Happy). We believe in transparent collaboration between human developers and AI tools.
 
 ---
 
 <div align="center">
-  <sub>Built for the Claude AI community</sub>
+  <sub>Built for the Codex AI community</sub>
 </div>

@@ -9,7 +9,7 @@ TRACKER_CONFIG="$TRACKER_DIR/config.json"
 SNAPSHOT_PATH="$TRACKER_DIR/latest_snapshot.json"
 
 APP_DERIVED_DATA="${DERIVED_DATA_PATH:-/tmp/CodexUsageDerivedInstall}"
-APP_BUILD_PATH="$APP_DERIVED_DATA/Build/Products/Debug/Claude Usage.app"
+APP_BUILD_PATH="$APP_DERIVED_DATA/Build/Products/Debug/Codex Usage.app"
 APP_INSTALL_DIR="$HOME/Applications"
 APP_INSTALL_PATH="$APP_INSTALL_DIR/Codex Usage.app"
 APP_LAUNCH_AGENT="$HOME/Library/LaunchAgents/com.codex.usage-menubar.plist"
@@ -39,8 +39,8 @@ python3 "$TRACKER_DST" snapshot --output "$SNAPSHOT_PATH"
 python3 "$TRACKER_DST" install-autostart --interval 180 --output "$SNAPSHOT_PATH"
 
 xcodebuild \
-  -project "$REPO_ROOT/Claude Usage.xcodeproj" \
-  -scheme "Claude Usage" \
+  -project "$REPO_ROOT/Codex Usage.xcodeproj" \
+  -scheme "Codex Usage" \
   -configuration Debug \
   -derivedDataPath "$APP_DERIVED_DATA" \
   build CODE_SIGNING_ALLOWED=NO > /tmp/codex_usage_build.log
